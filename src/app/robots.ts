@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/admin/"],
+        disallow: ["/api/", "/ops-74x/"],
       },
       {
         userAgent: "GPTBot",
@@ -29,6 +29,6 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
       },
     ],
-    sitemap: "https://scentdesk.com/sitemap.xml",
+    sitemap: "https://scentdesk.app/sitemap.xml",
   };
 }

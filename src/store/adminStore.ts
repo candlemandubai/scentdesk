@@ -20,32 +20,19 @@ const defaultFeatures: AdminFeature[] = [
     category: "widgets",
     enabled: true,
     subFeatures: [
-      { id: "w-news", name: "News Feed", description: "Live fragrance industry news", category: "widgets", enabled: true },
-      { id: "w-raw-materials", name: "Raw Materials Tracker", description: "Essential oils and aroma chemicals pricing", category: "widgets", enabled: true },
-      { id: "w-market", name: "Market Overview", description: "Market size, growth, and segments", category: "widgets", enabled: true },
-      { id: "w-launches", name: "Brand Launches", description: "New fragrance launches and releases", category: "widgets", enabled: true },
-      { id: "w-trending", name: "Trending Ingredients", description: "Most popular ingredients tracker", category: "widgets", enabled: true },
-      { id: "w-home-frag", name: "Home Fragrances", description: "Candles, diffusers, room sprays market", category: "widgets", enabled: true },
-      { id: "w-seasonal", name: "Seasonal Trends", description: "Seasonal fragrance trends analysis", category: "widgets", enabled: true },
-      { id: "w-ai", name: "AI Insights", description: "AI-powered market analysis", category: "widgets", enabled: true },
-      { id: "w-events", name: "Events Calendar", description: "Industry events and trade shows", category: "widgets", enabled: true },
-      { id: "w-jobs", name: "Jobs Board", description: "Industry job listings", category: "widgets", enabled: true },
-      { id: "w-schools", name: "Schools & Education", description: "Perfumery schools and programs", category: "widgets", enabled: true },
-      { id: "w-sustainability", name: "Sustainability Tracker", description: "Sustainability metrics and certifications", category: "widgets", enabled: true },
-      { id: "w-regulatory", name: "Regulatory Updates", description: "IFRA, EU, FDA regulatory news", category: "widgets", enabled: true },
-      { id: "w-regional", name: "Regional Data", description: "Market data by region", category: "widgets", enabled: true },
+      { id: "w-news-market", name: "Market & M&A News", description: "Market intelligence and M&A news", category: "widgets", enabled: true },
+      { id: "w-news-launches", name: "Launches & Industry", description: "New launches and industry developments", category: "widgets", enabled: true },
+      { id: "w-news-materials", name: "Raw Materials & Supply", description: "Raw materials and supply chain news", category: "widgets", enabled: true },
+      { id: "w-news-home", name: "Home Fragrance News", description: "Candles, diffusers, room sprays", category: "widgets", enabled: true },
+      { id: "w-regulatory", name: "Regulatory Updates", description: "IFRA, EU, FDA regulatory RSS news", category: "widgets", enabled: true },
       { id: "w-clock", name: "World Clock", description: "Major fragrance hub time zones", category: "widgets", enabled: true },
-      { id: "w-heatmap", name: "Market Heatmap", description: "Visual market performance", category: "widgets", enabled: true },
-      { id: "w-supply", name: "Supply Chain", description: "Supply chain status tracker", category: "widgets", enabled: true },
-      { id: "w-index", name: "Fragrance Index", description: "Custom fragrance market index", category: "widgets", enabled: true },
-      { id: "w-sellers", name: "Top Sellers", description: "Best-selling fragrances globally", category: "widgets", enabled: true },
-      { id: "w-community", name: "Community Feed", description: "Industry community posts", category: "widgets", enabled: true },
-      { id: "w-consumer", name: "Consumer Trends", description: "Consumer demand and demographics", category: "widgets", enabled: true },
-      { id: "w-families", name: "Fragrance Families", description: "Fragrance family market share", category: "widgets", enabled: true },
-      { id: "w-social", name: "Social Buzz", description: "Social media trending hashtags", category: "widgets", enabled: true },
+      { id: "w-newsletter", name: "Newsletter Signup", description: "Email capture for weekly briefs", category: "widgets", enabled: true },
+      { id: "w-events", name: "Events Calendar", description: "Industry events and trade shows", category: "widgets", enabled: true },
       { id: "w-suppliers", name: "Suppliers & Houses", description: "Fragrance houses and ingredient suppliers", category: "widgets", enabled: true },
-      { id: "w-fotd", name: "Fragrance of the Day", description: "Daily fragrance spotlight with notes", category: "widgets", enabled: true },
-      { id: "w-converter", name: "Quick Converter", description: "Volume, dilution, and markup calculator", category: "widgets", enabled: true },
+      { id: "w-schools", name: "Schools & Education", description: "Perfumery schools and programs", category: "widgets", enabled: true },
+      { id: "w-apps", name: "Useful Apps & Resources", description: "Tools, communities, and references", category: "widgets", enabled: true },
+      { id: "w-perfumers", name: "Perfumers & Podcasts", description: "Notable noses and fragrance podcasts", category: "widgets", enabled: true },
+      { id: "w-jobs", name: "Jobs & Careers", description: "Career pages and job search links", category: "widgets", enabled: true },
     ],
   },
   {
@@ -107,7 +94,33 @@ const defaultFeatures: AdminFeature[] = [
       { id: "a-search", name: "Search Analytics", description: "Track search queries", category: "analytics", enabled: true },
     ],
   },
+  {
+    id: "monetization",
+    name: "Monetization",
+    description: "Revenue features — all disabled by default until ready to launch",
+    category: "monetization",
+    enabled: false,
+    subFeatures: [
+      { id: "m-newsletter", name: "Newsletter Signup", description: "Email capture widget for weekly market briefs", category: "monetization", enabled: false },
+      { id: "m-affiliates", name: "Affiliate Links", description: "Add affiliate tags to outbound product/retailer links", category: "monetization", enabled: false },
+      { id: "m-paywall", name: "Pro Paywall", description: "Gate premium widgets behind Pro subscription", category: "monetization", enabled: false },
+      { id: "m-sponsored", name: "Sponsored Listings", description: "Show promoted cards in Brand Launches and Suppliers", category: "monetization", enabled: false },
+    ],
+  },
 ];
+
+// Integrity check — detect localStorage tampering
+function validateFeatures(features: AdminFeature[]): boolean {
+  if (!Array.isArray(features)) return false;
+  const validIds = new Set(defaultFeatures.map((f) => f.id));
+  return features.every(
+    (f) =>
+      validIds.has(f.id) &&
+      typeof f.enabled === "boolean" &&
+      typeof f.name === "string" &&
+      (!f.subFeatures || Array.isArray(f.subFeatures))
+  );
+}
 
 export const useAdminStore = create<AdminState>()(
   persist(
@@ -150,6 +163,15 @@ export const useAdminStore = create<AdminState>()(
         })),
       resetDefaults: () => set({ features: defaultFeatures }),
     }),
-    { name: "scent-desk-admin" }
+    {
+      name: "scent-desk-admin",
+      // Validate stored data on rehydration — reset if tampered
+      onRehydrateStorage: () => (state) => {
+        if (state && !validateFeatures(state.features)) {
+          console.warn("[ScentDesk] Admin store integrity check failed. Resetting to defaults.");
+          state.features = defaultFeatures;
+        }
+      },
+    }
   )
 );
