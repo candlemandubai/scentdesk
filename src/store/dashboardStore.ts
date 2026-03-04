@@ -64,10 +64,10 @@ export const useDashboardStore = create<DashboardState>()(
     }),
     {
       name: "scent-desk-v2",
-      version: 4,
+      version: 5,
       migrate: (persisted: unknown, version: number) => {
         const state = persisted as DashboardState;
-        if (version < 4) {
+        if (version < 5) {
           // Merge any new default widgets that don't exist in persisted state
           const existingIds = new Set(state.widgets.map((w) => w.id));
           const newWidgets = defaultWidgets.filter((w) => !existingIds.has(w.id));
