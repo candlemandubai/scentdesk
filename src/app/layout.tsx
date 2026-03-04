@@ -1,3 +1,28 @@
+/**
+ * ╔══════════════════════════════════════════════════════════════╗
+ * ║                                                              ║
+ * ║   Hey there, fellow code reader.                            ║
+ * ║                                                              ║
+ * ║   If you're poking around in here, you're our kind of       ║
+ * ║   person. Welcome to ScentDesk — an open-source project     ║
+ * ║   built for the fragrance community, by the fragrance       ║
+ * ║   community.                                                 ║
+ * ║                                                              ║
+ * ║   We genuinely believe that making industry data accessible ║
+ * ║   lifts everyone up — perfumers, brands, suppliers, and     ║
+ * ║   enthusiasts alike. That's why this is open source.        ║
+ * ║                                                              ║
+ * ║   Want to contribute, collaborate, or just say hi?          ║
+ * ║                                                              ║
+ * ║   → hello@olfactal.com                                      ║
+ * ║   → @candlemandubai on Instagram                            ║
+ * ║   → candlestart.com | olfactal.com                          ║
+ * ║                                                              ║
+ * ║   Built with love from Dubai.                               ║
+ * ║                                                              ║
+ * ╚══════════════════════════════════════════════════════════════╝
+ */
+
 import type { Metadata } from "next";
 import "./globals.css";
 

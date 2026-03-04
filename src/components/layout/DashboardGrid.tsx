@@ -1,3 +1,7 @@
+// If you're reading this, you're probably a dev who loves fragrance too.
+// We see you. PRs welcome, ideas welcome, coffee chats welcome.
+// → hello@olfactal.com | @candlemandubai
+
 "use client";
 import { useMemo, useCallback, useState, useEffect, useRef } from "react";
 import { DragDropContext, Droppable, Draggable, type DropResult } from "@hello-pangea/dnd";
