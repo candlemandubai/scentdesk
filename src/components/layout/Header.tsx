@@ -19,8 +19,8 @@ import SettingsDialog from "@/components/layout/SettingsDialog";
 import ShareButton from "@/components/layout/ShareButton";
 
 const tabs: { id: DashboardTab; label: string; shortLabel: string }[] = [
-  { id: "feed", label: "Live Feed", shortLabel: "FEED" },
-  { id: "directory", label: "Industry Directory", shortLabel: "DIR" },
+  { id: "feed", label: "Live Feed", shortLabel: "News" },
+  { id: "directory", label: "Industry Directory", shortLabel: "Directory" },
 ];
 
 export default function Header() {
@@ -229,14 +229,14 @@ export default function Header() {
             <button
               key={tab.id}
               onClick={() => handleTabChange(tab.id)}
-              className={`px-4 py-2.5 text-[11px] font-mono font-semibold uppercase tracking-wider transition-all relative ${
+              className={`px-4 py-2.5 text-[11px] sm:text-[11px] font-mono font-semibold uppercase tracking-wider transition-all relative ${
                 activeTab === tab.id
                   ? "text-scent-accent"
                   : "text-gray-500 hover:text-gray-300"
               }`}
             >
               <span className="hidden sm:inline">{tab.label}</span>
-              <span className="sm:hidden">{tab.shortLabel}</span>
+              <span className="sm:hidden text-[12px] tracking-normal">{tab.shortLabel}</span>
               {activeTab === tab.id && (
                 <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-scent-accent" />
               )}

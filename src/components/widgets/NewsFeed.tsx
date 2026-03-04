@@ -66,13 +66,13 @@ function NewsFeedBase({ title, categories, info }: NewsFeedBaseProps) {
       headerRight={
         <div className="flex items-center gap-2">
           <div className="relative flex items-center">
-            <Calendar size={10} className="absolute left-1.5 text-gray-500 pointer-events-none" />
+            <Calendar size={10} className="absolute left-1.5 text-gray-500 pointer-events-none z-10" />
             <input
               type="date"
               value={selectedDate}
               max={today}
               onChange={(e) => setSelectedDate(e.target.value || today)}
-              className="text-[9px] font-mono bg-transparent border border-scent-border/50 rounded pl-5 pr-1 py-0.5 text-gray-400 hover:border-scent-accent/30 focus:border-scent-accent/50 focus:outline-none cursor-pointer [color-scheme:dark]"
+              className="text-[9px] font-mono bg-transparent border border-scent-border/50 rounded pl-5 pr-1 py-0.5 text-gray-400 hover:border-scent-accent/30 focus:border-scent-accent/50 focus:outline-none cursor-pointer [color-scheme:dark] sm:w-auto w-6 sm:opacity-100"
             />
           </div>
           <button

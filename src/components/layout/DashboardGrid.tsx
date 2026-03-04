@@ -21,6 +21,7 @@ import Schools from "@/components/widgets/Schools";
 import Suppliers from "@/components/widgets/Suppliers";
 import UsefulApps from "@/components/widgets/UsefulApps";
 import NewsletterSignup from "@/components/widgets/NewsletterSignup";
+import DailyBrief from "@/components/widgets/DailyBrief";
 import PerfumerSpotlight from "@/components/widgets/PerfumerSpotlight";
 import JobsBoard from "@/components/widgets/JobsBoard";
 
@@ -37,6 +38,7 @@ const widgetComponents: Record<WidgetType, React.ComponentType> = {
   "suppliers": Suppliers,
   "useful-apps": UsefulApps,
   "newsletter-signup": NewsletterSignup,
+  "daily-brief": DailyBrief,
   "perfumer-spotlight": PerfumerSpotlight,
   "jobs-board": JobsBoard,
 };
