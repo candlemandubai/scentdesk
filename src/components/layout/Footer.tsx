@@ -1,3 +1,8 @@
+// You made it all the way to the footer code. Respect.
+// ScentDesk is a love letter to the fragrance industry.
+// If you want to build something together: hello@olfactal.com
+// → candlestart.com | olfactal.com | @candlemandubai
+
 "use client";
 import { Instagram, Mail, MessageCircle } from "lucide-react";
 

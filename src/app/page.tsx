@@ -46,6 +46,23 @@ export default function Home() {
 
   useEffect(() => {
     trackEvent(createEvent("page_view"));
+
+    // A little wave to anyone who opens DevTools
+    console.log(
+      "%c\n  ScentDesk — Open Source Fragrance Intelligence\n",
+      "color: #d4a574; font-size: 14px; font-weight: bold;"
+    );
+    console.log(
+      "%c  Hey, you found the console. Nice.\n" +
+      "  We're open source because we think the fragrance\n" +
+      "  industry deserves better access to data.\n\n" +
+      "  Want to contribute? We'd love that.\n\n" +
+      "  GitHub:     github.com/adameli2023/scentdesk\n" +
+      "  Email:      hello@olfactal.com\n" +
+      "  Instagram:  @candlemandubai\n" +
+      "  Web:        candlestart.com | olfactal.com\n",
+      "color: #888; font-size: 11px;"
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
