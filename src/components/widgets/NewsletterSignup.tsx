@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import WidgetWrapper from "./WidgetWrapper";
-import { Mail, ArrowRight, Check, Loader2 } from "lucide-react";
+import { ArrowRight, Check, Loader2 } from "lucide-react";
 
 export default function NewsletterSignup() {
   const [email, setEmail] = useState("");
@@ -23,7 +23,7 @@ export default function NewsletterSignup() {
 
       if (res.ok) {
         setStatus("success");
-        setMessage(data.message || "You're in! Check your inbox.");
+        setMessage(data.message || "You're on the list! We'll be in touch.");
         setEmail("");
       } else {
         setStatus("error");
@@ -37,25 +37,58 @@ export default function NewsletterSignup() {
 
   return (
     <WidgetWrapper
-      title="Market Brief"
-      info="Get a weekly fragrance market intelligence brief delivered to your inbox. Covers trends, launches, raw material movements, and regulatory changes."
+      title="olfactal.com"
+      info="Olfactal — perfume formulation software with IFRA & constituent compliance checking. Get early beta access."
     >
       <div className="flex flex-col items-center text-center px-2 py-3">
-        <div className="w-10 h-10 rounded-full bg-scent-accent/10 flex items-center justify-center mb-3">
-          <Mail size={18} className="text-scent-accent" />
-        </div>
+        {/* Olfactal logo */}
+        <a
+          href="https://olfactal.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mb-3 group"
+        >
+          <img
+            src="/olfactal-logo.png"
+            alt="Olfactal"
+            width={48}
+            height={48}
+            className="rounded-xl group-hover:opacity-80 transition-opacity"
+          />
+        </a>
 
-        <h3 className="text-[14px] font-mono font-bold text-white mb-1">
-          Weekly Intelligence Brief
-        </h3>
+        <a
+          href="https://olfactal.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:opacity-80 transition-opacity"
+        >
+          <h3 className="text-[14px] font-mono font-bold text-white mb-0.5">
+            olfactal.com
+          </h3>
+        </a>
+        <p className="text-[11px] font-mono text-gray-400 mb-3">
+          Perfume Formulation Software
+        </p>
+
         <p className="text-[11px] text-gray-400 leading-relaxed mb-4 max-w-[280px]">
-          Fragrance market trends, raw material price moves, regulatory updates & new launches — every Monday.
+          Formulate, manage ingredients & check IFRA and constituent compliance — all in one place. Built for perfumers.
         </p>
 
         {status === "success" ? (
-          <div className="flex items-center gap-2 text-emerald-400 text-[12px] font-mono py-2">
-            <Check size={14} />
-            <span>{message}</span>
+          <div className="flex flex-col items-center gap-2 py-2">
+            <div className="flex items-center gap-2 text-emerald-400 text-[12px] font-mono">
+              <Check size={14} />
+              <span>{message}</span>
+            </div>
+            <a
+              href="https://olfactal.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[10px] font-mono text-scent-accent hover:text-scent-accent/80 transition-colors"
+            >
+              Visit olfactal.com →
+            </a>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="w-full max-w-[320px]">
@@ -80,7 +113,7 @@ export default function NewsletterSignup() {
                   <Loader2 size={12} className="animate-spin" />
                 ) : (
                   <>
-                    JOIN
+                    GET ACCESS
                     <ArrowRight size={10} />
                   </>
                 )}
@@ -90,15 +123,15 @@ export default function NewsletterSignup() {
               <p className="text-red-400 text-[10px] font-mono mt-1.5">{message}</p>
             )}
             <p className="text-[9px] text-gray-600 mt-2">
-              Free forever. Unsubscribe anytime. No spam.
+              Free beta access. By the team behind ScentDesk.
             </p>
           </form>
         )}
 
         <div className="flex items-center gap-4 mt-4 text-[10px] text-gray-500 font-mono">
-          <span>📊 Market Data</span>
-          <span>🧪 Ingredients</span>
-          <span>📋 Regulatory</span>
+          <span>🧪 Formulation</span>
+          <span>✅ IFRA Check</span>
+          <span>📋 Compliance</span>
         </div>
       </div>
     </WidgetWrapper>
