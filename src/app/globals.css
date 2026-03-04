@@ -227,11 +227,34 @@ body {
 /* Light theme — ticker */
 .theme-light .bg-scent-surface\/90 { background: rgba(255, 255, 255, 0.9) !important; }
 
+/* Light theme — ticker */
+.theme-light .ticker-scroll .text-gray-400 { color: #444 !important; }
+.theme-light .ticker-scroll .group-hover\:text-gray-200:hover { color: #111 !important; }
+
+/* Light theme — count badge & scent-border bg */
+.theme-light .bg-scent-border { background: #e0ddd5 !important; }
+.theme-light .bg-scent-border .text-gray-400,
+.theme-light .bg-scent-border.text-gray-400 { color: #555 !important; }
+
+/* Light theme — footer */
+.theme-light footer { background: rgba(255, 255, 255, 0.7) !important; border-color: var(--border) !important; }
+
+/* Light theme — accent backgrounds with opacity */
+.theme-light .bg-scent-accent\/5 { background: rgba(184, 149, 106, 0.08) !important; }
+.theme-light .bg-scent-accent\/10 { background: rgba(184, 149, 106, 0.12) !important; }
+.theme-light .border-scent-accent\/10 { border-color: rgba(184, 149, 106, 0.2) !important; }
+
 /* Light theme — links and hover states */
 .theme-light a:hover .text-white,
 .theme-light .group-hover\:text-white:hover { color: #000 !important; }
 .theme-light .hover\:text-white:hover { color: #000 !important; }
 .theme-light .hover\:text-gray-300:hover { color: #222 !important; }
+
+/* Light theme — surface opacity variants */
+.theme-light .bg-scent-surface\/50 { background: rgba(255, 255, 255, 0.7) !important; }
+.theme-light .bg-scent-surface\/90 { background: rgba(255, 255, 255, 0.95) !important; }
+.theme-light .bg-scent-bg\/80 { background: rgba(245, 245, 240, 0.9) !important; }
+.theme-light .border-scent-border\/50 { border-color: rgba(229, 229, 224, 0.7) !important; }
 
 /* Ticker */
 .ticker-scroll {
