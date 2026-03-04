@@ -1,9 +1,9 @@
 import type { Widget } from "@/types";
 
 export const defaultWidgets: Widget[] = [
-  // Feed tab — separate cards per news category
-  { id: "news-market", type: "news-market", title: "Market & M&A", enabled: true, x: 0, y: 0, w: 8, h: 5, minW: 4, minH: 3, tab: "feed" },
+  // Feed tab — Intelligence Brief first (compact summary, great for mobile)
   { id: "daily-brief", type: "daily-brief", title: "Intelligence Brief", enabled: true, x: 8, y: 0, w: 4, h: 4, minW: 3, minH: 3, tab: "feed" },
+  { id: "news-market", type: "news-market", title: "Market & M&A", enabled: true, x: 0, y: 0, w: 8, h: 5, minW: 4, minH: 3, tab: "feed" },
   { id: "news-launches", type: "news-launches", title: "Launches & Industry", enabled: true, x: 8, y: 4, w: 4, h: 5, minW: 4, minH: 3, tab: "feed" },
   { id: "news-materials", type: "news-materials", title: "Raw Materials & Supply", enabled: true, x: 0, y: 5, w: 4, h: 5, minW: 4, minH: 3, tab: "feed" },
   { id: "news-home", type: "news-home", title: "Home Fragrance", enabled: true, x: 4, y: 5, w: 4, h: 5, minW: 4, minH: 3, tab: "feed" },
