@@ -12,11 +12,13 @@ import {
   Minimize2,
   Sun,
   Moon,
+  Users,
 } from "lucide-react";
 import type { DashboardTab } from "@/types";
 import CommandPalette from "@/components/layout/CommandPalette";
 import SettingsDialog from "@/components/layout/SettingsDialog";
 import ShareButton from "@/components/layout/ShareButton";
+import { useViewCounter } from "@/hooks/useViewCounter";
 
 const tabs: { id: DashboardTab; label: string; shortLabel: string }[] = [
   { id: "feed", label: "Live Feed", shortLabel: "News" },
@@ -35,6 +37,7 @@ export default function Header() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isDark, setIsDark] = useState(true);
   const [geoLocation, setGeoLocation] = useState<{ city: string; country: string } | null>(null);
+  const { totalViews, liveViewers } = useViewCounter();
 
   // Clock
   useEffect(() => {
@@ -129,13 +132,17 @@ export default function Header() {
         {/* Top bar */}
         <div className="flex items-center justify-between px-4 h-11">
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
+            <button
+              onClick={() => handleTabChange("feed")}
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+              title="Back to Live Feed"
+            >
               <div className="w-2 h-2 rounded-full bg-scent-accent" />
               <span className="text-[13px] font-mono font-bold tracking-wider text-white">
                 SCENT<span className="text-scent-accent">DESK</span>
               </span>
               <span className="text-[10px] font-mono text-gray-600">v1.0.0</span>
-            </div>
+            </button>
 
             <a
               href="https://instagram.com/candlemandubai"
@@ -173,6 +180,12 @@ export default function Header() {
                 </>
               )}
             </button>
+
+            {/* Live viewers */}
+            <div className="hidden sm:flex items-center gap-1 text-[10px] font-mono text-gray-500" title={totalViews ? `${totalViews.toLocaleString()} total views` : "Counting..."}>
+              <Users size={10} className="text-emerald-400/70" />
+              <span>{liveViewers}</span>
+            </div>
 
             <div className="h-4 w-px bg-scent-border hidden md:block" />
             <span className="text-[10px] font-mono text-gray-500 hidden md:block">{currentTime}</span>

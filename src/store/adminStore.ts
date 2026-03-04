@@ -96,12 +96,12 @@ const defaultFeatures: AdminFeature[] = [
   },
   {
     id: "monetization",
-    name: "Monetization",
-    description: "Revenue features — all disabled by default until ready to launch",
+    name: "Olfactal Beta",
+    description: "Olfactal integration features — disabled until ready to launch",
     category: "monetization",
     enabled: false,
     subFeatures: [
-      { id: "m-newsletter", name: "Newsletter Signup", description: "Email capture widget for weekly market briefs", category: "monetization", enabled: false },
+      { id: "m-newsletter", name: "Olfactal Signup", description: "Email capture widget for olfactal.com beta access", category: "monetization", enabled: false },
       { id: "m-affiliates", name: "Affiliate Links", description: "Add affiliate tags to outbound product/retailer links", category: "monetization", enabled: false },
       { id: "m-paywall", name: "Pro Paywall", description: "Gate premium widgets behind Pro subscription", category: "monetization", enabled: false },
       { id: "m-sponsored", name: "Sponsored Listings", description: "Show promoted cards in Brand Launches and Suppliers", category: "monetization", enabled: false },

@@ -2,13 +2,15 @@
 import { useState } from "react";
 import WidgetWrapper from "./WidgetWrapper";
 import { useLiveData } from "@/hooks/useLiveData";
-import { RefreshCw, Sparkles, Clock } from "lucide-react";
+import { RefreshCw, Sparkles, Clock, ExternalLink } from "lucide-react";
 
 interface BriefInsight {
   emoji: string;
   category: string;
   headline: string;
   detail: string;
+  sourceUrl?: string;
+  source?: string;
 }
 
 interface DailyBriefData {
@@ -141,9 +143,23 @@ export default function DailyBrief() {
                     {insight.headline}
                   </p>
                   {expandedIdx === i && (
-                    <p className="text-[11px] text-gray-500 leading-relaxed mt-1">
-                      {insight.detail}
-                    </p>
+                    <div className="mt-1">
+                      <p className="text-[11px] text-gray-500 leading-relaxed">
+                        {insight.detail}
+                      </p>
+                      {insight.sourceUrl && (
+                        <a
+                          href={insight.sourceUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex items-center gap-1 mt-1.5 text-[9px] font-mono text-gray-600 hover:text-scent-accent transition-colors"
+                        >
+                          <ExternalLink size={8} />
+                          <span>{insight.source || "Source"}</span>
+                        </a>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>
