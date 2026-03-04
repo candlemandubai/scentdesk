@@ -19,8 +19,13 @@ export const mockNews: NewsItem[] = [
 // Real events — verified industry trade shows and conferences (last cross-checked: Mar 2026)
 export const mockEvents: FragranceEvent[] = [
   // MARCH
+  { id: "cs1", name: "Cinquième Sens — Bakhoor Workshop", type: "workshop", date: "2026-03-04", location: "Villa 515", city: "Dubai", country: "UAE", lat: 25.2048, lng: 55.2708, url: "https://cinquiemesensme.xyz/gallery/", instagram: "https://instagram.com/cinquiemesens.me" },
+  { id: "cs2", name: "Cinquième Sens — Fragrance Creation", type: "workshop", date: "2026-03-06", location: "Villa 515", city: "Dubai", country: "UAE", lat: 25.2048, lng: 55.2708, url: "https://cinquiemesensme.xyz/gallery/", instagram: "https://instagram.com/cinquiemesens.me" },
+  { id: "cs3", name: "Cinquième Sens — Level 2 Advanced Course", type: "workshop", date: "2026-03-23", location: "Villa 515", city: "Dubai", country: "UAE", lat: 25.2048, lng: 55.2708, url: "https://cinquiemesensme.xyz/gallery/", instagram: "https://instagram.com/cinquiemesens.me" },
   { id: "2", name: "Cosmoprof Worldwide Bologna", type: "trade-show", date: "2026-03-26", location: "BolognaFiere", city: "Bologna", country: "Italy", lat: 44.5136, lng: 11.3990, url: "https://www.cosmoprof.com", instagram: "https://instagram.com/cosmoprof" },
   // APRIL
+  { id: "cs4", name: "Cinquième Sens — Level 1 Intro to Perfumery", type: "workshop", date: "2026-04-01", location: "Villa 515", city: "Dubai", country: "UAE", lat: 25.2048, lng: 55.2708, url: "https://cinquiemesensme.xyz/gallery/", instagram: "https://instagram.com/cinquiemesens.me" },
+  { id: "cs5", name: "Cinquième Sens — Bakhoor Workshop", type: "workshop", date: "2026-04-01", location: "Villa 515", city: "Dubai", country: "UAE", lat: 25.2048, lng: 55.2708, url: "https://cinquiemesensme.xyz/gallery/", instagram: "https://instagram.com/cinquiemesens.me" },
   { id: "17", name: "Paris Perfume Week", type: "conference", date: "2026-04-09", location: "Palais Brongniart", city: "Paris", country: "France", lat: 48.8693, lng: 2.3411, url: "https://www.perfume-week.com/en/" },
   { id: "3", name: "in-cosmetics Global", type: "trade-show", date: "2026-04-14", location: "Paris Expo Porte de Versailles", city: "Paris", country: "France", lat: 48.8322, lng: 2.2876, url: "https://www.in-cosmetics.com/global", instagram: "https://instagram.com/in_cosmetics" },
   // MAY
@@ -52,6 +57,7 @@ export const mockSchools: School[] = [
   { id: "5", name: "IFF Scent Design Program", location: "New York", country: "USA", type: "institute", programs: ["Scent Design", "Consumer Insights"], url: "https://www.iff.com" },
   { id: "6", name: "Cinquième Sens", location: "Paris", country: "France", type: "workshop", programs: ["Olfactory Training", "Raw Materials Discovery"], url: "https://www.cinquiemesens.com" },
   { id: "6b", name: "Cinquième Sens ME", location: "Dubai", country: "UAE", type: "workshop", programs: ["Olfactory Training", "Raw Materials Discovery"], url: "https://cinquiemesensme.xyz", instagram: "https://instagram.com/cinquiemesens.me" },
+  { id: "6c", name: "École Supérieure du Parfum", location: "Paris", country: "France", type: "university", programs: ["Bachelor Perfumer", "Master Perfumer", "Fragrance Marketing"], url: "http://en.ecole-parfum.com/" },
   { id: "7", name: "The Perfume Foundation", location: "London", country: "UK", type: "online", programs: ["Online Perfumery Diploma", "History of Perfume"], url: "https://www.theperfumefoundation.com" },
   { id: "8", name: "Pratt Institute (Scent Design)", location: "New York", country: "USA", type: "university", programs: ["MFA Scent Design"], url: "https://www.pratt.edu" },
   { id: "9", name: "Mouillette & Friends", location: "Grasse", country: "France", type: "workshop", programs: ["Perfumery Workshop", "Nose Training"], url: "https://www.mouilletteandfriends.com" },
