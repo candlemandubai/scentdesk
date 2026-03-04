@@ -16,25 +16,30 @@ export const mockNews: NewsItem[] = [
   { id: "8", title: "India's Fragrance Market Growing at 15% CAGR", source: "Economic Times", category: "Market", timestamp: "9h ago", url: "https://economictimes.indiatimes.com/industry/fragrance-market-india-growth", sentiment: "positive", region: "Asia" },
 ];
 
-// Real events — verified industry trade shows and conferences
+// Real events — verified industry trade shows and conferences (last cross-checked: Mar 2026)
 export const mockEvents: FragranceEvent[] = [
-  { id: "1", name: "Esxence Milan", type: "trade-show", date: "2026-03-20", location: "MiCo Milano", city: "Milan", country: "Italy", lat: 45.4773, lng: 9.1533, url: "https://www.esxence.com", instagram: "https://instagram.com/esxence" },
-  { id: "2", name: "Cosmoprof Worldwide Bologna", type: "trade-show", date: "2026-03-12", location: "BolognaFiere", city: "Bologna", country: "Italy", lat: 44.5136, lng: 11.3990, url: "https://www.cosmoprof.com", instagram: "https://instagram.com/cosmoprof" },
-  { id: "3", name: "in-cosmetics Global", type: "trade-show", date: "2026-04-08", location: "RAI Amsterdam", city: "Amsterdam", country: "Netherlands", lat: 52.3388, lng: 4.8884, url: "https://www.in-cosmetics.com/global", instagram: "https://instagram.com/in_cosmetics" },
-  { id: "4", name: "Perfume & Flavor Masterclass", type: "workshop", date: "2026-04-12", location: "Grasse Institute", city: "Grasse", country: "France", lat: 43.6601, lng: 6.9232, url: "https://www.grfrenchriviera.com" },
-  { id: "5", name: "SIMPPAR Brazil", type: "trade-show", date: "2026-05-20", location: "Expo Center Norte", city: "São Paulo", country: "Brazil", lat: -23.5157, lng: -46.6369, url: "https://www.simppar.com.br", instagram: "https://instagram.com/simppar" },
-  { id: "6", name: "Beautyworld Istanbul", type: "trade-show", date: "2026-06-10", location: "Istanbul Expo Center", city: "Istanbul", country: "Turkey", lat: 41.0082, lng: 28.9784, url: "https://beautyworldturkey.com" },
-  { id: "7", name: "World Perfumery Congress 2026", type: "conference", date: "2026-06-15", location: "Palais des Festivals", city: "Cannes", country: "France", lat: 43.5528, lng: 7.0174, url: "https://www.worldperfumerycongress.com" },
-  { id: "8", name: "MakeUp in Paris", type: "trade-show", date: "2026-06-18", location: "Carreau du Temple", city: "Paris", country: "France", lat: 48.8640, lng: 2.3630, url: "https://www.makeup-in.com/paris", instagram: "https://instagram.com/makeup_in_official" },
-  { id: "16", name: "Grasse Perfume Week", type: "conference", date: "2026-05-04", location: "Grasse", city: "Grasse", country: "France", lat: 43.6601, lng: 6.9232, url: "https://www.grfrenchriviera.com" },
-  { id: "17", name: "Paris Perfume Week", type: "conference", date: "2026-06-22", location: "Various Venues", city: "Paris", country: "France", lat: 48.8566, lng: 2.3522, url: "https://www.parisperfumeweek.com" },
-  { id: "9", name: "Pitti Fragranze", type: "trade-show", date: "2026-09-12", location: "Fortezza da Basso", city: "Florence", country: "Italy", lat: 43.7782, lng: 11.2458, url: "https://www.pittimmagine.com/en/fairs/fragranze", instagram: "https://instagram.com/pittifragranze" },
-  { id: "10", name: "TFWA World Exhibition", type: "trade-show", date: "2026-09-27", location: "Palais des Festivals", city: "Cannes", country: "France", lat: 43.5528, lng: 7.0174, url: "https://www.tfwa.com", instagram: "https://instagram.com/tfabordelwa_wre" },
-  { id: "11", name: "Beautyworld Middle East", type: "trade-show", date: "2026-10-28", location: "Dubai World Trade Centre", city: "Dubai", country: "UAE", lat: 25.2285, lng: 55.2872, url: "https://beautyworld-middle-east.ae.messefrankfurt.com", instagram: "https://instagram.com/beautyworldme" },
+  // MARCH
+  { id: "2", name: "Cosmoprof Worldwide Bologna", type: "trade-show", date: "2026-03-26", location: "BolognaFiere", city: "Bologna", country: "Italy", lat: 44.5136, lng: 11.3990, url: "https://www.cosmoprof.com", instagram: "https://instagram.com/cosmoprof" },
+  // APRIL
+  { id: "17", name: "Paris Perfume Week", type: "conference", date: "2026-04-09", location: "Palais Brongniart", city: "Paris", country: "France", lat: 48.8693, lng: 2.3411, url: "https://www.perfume-week.com/en/" },
+  { id: "3", name: "in-cosmetics Global", type: "trade-show", date: "2026-04-14", location: "Paris Expo Porte de Versailles", city: "Paris", country: "France", lat: 48.8322, lng: 2.2876, url: "https://www.in-cosmetics.com/global", instagram: "https://instagram.com/in_cosmetics" },
+  // MAY
+  { id: "6", name: "BEAUTYISTANBUL", type: "trade-show", date: "2026-05-07", location: "TÜYAP Fair Center", city: "Istanbul", country: "Turkey", lat: 41.0024, lng: 28.6220, url: "https://beauty-istanbul.com", instagram: "https://instagram.com/beautyistanbul_" },
+  { id: "15", name: "Beautyworld Saudi Arabia", type: "trade-show", date: "2026-05-18", location: "Riyadh International Convention & Exhibition Center", city: "Riyadh", country: "Saudi Arabia", lat: 24.7136, lng: 46.6753, url: "https://beautyworld-saudi-arabia.ae.messefrankfurt.com" },
+  { id: "5", name: "SIMPPAR Grasse", type: "trade-show", date: "2026-05-26", location: "Cours Honoré Cresp", city: "Grasse", country: "France", lat: 43.6601, lng: 6.9232, url: "https://www.simppar.fr/en/", instagram: "https://instagram.com/simppar_officiel" },
+  // JUNE
+  { id: "1", name: "Esxence Milan", type: "trade-show", date: "2026-06-03", location: "MiCo Milano", city: "Milan", country: "Italy", lat: 45.4773, lng: 9.1533, url: "https://www.esxence.com", instagram: "https://instagram.com/esxence" },
+  { id: "8", name: "MakeUp in Paris", type: "trade-show", date: "2026-06-17", location: "Carrousel du Louvre", city: "Paris", country: "France", lat: 48.8614, lng: 2.3356, url: "https://www.makeup-in-paris.com/en/", instagram: "https://instagram.com/makeup_in_official" },
+  { id: "7", name: "World Perfumery Congress 2026", type: "conference", date: "2026-06-23", location: "Monterey Conference Center", city: "Monterey", country: "USA", lat: 36.6002, lng: -121.8947, url: "https://www.worldperfumerycongress.com" },
+  // SEPTEMBER
+  { id: "9", name: "Pitti Fragranze", type: "trade-show", date: "2026-09-11", location: "Stazione Leopolda", city: "Florence", country: "Italy", lat: 43.7710, lng: 11.2390, url: "https://fragranze.pittimmagine.com", instagram: "https://instagram.com/pittifragranze" },
+  { id: "10", name: "TFWA World Exhibition", type: "trade-show", date: "2026-09-27", location: "Palais des Festivals", city: "Cannes", country: "France", lat: 43.5528, lng: 7.0174, url: "https://www.tfwa.com" },
+  // OCTOBER
+  { id: "11", name: "Beautyworld Middle East", type: "trade-show", date: "2026-10-06", location: "Dubai World Trade Centre", city: "Dubai", country: "UAE", lat: 25.2285, lng: 55.2872, url: "https://beautyworld-middle-east.ae.messefrankfurt.com", instagram: "https://instagram.com/beautyworldme" },
+  { id: "13", name: "IFEAT Conference", type: "conference", date: "2026-10-11", location: "Abu Dhabi", city: "Abu Dhabi", country: "UAE", lat: 24.4539, lng: 54.3773, url: "https://ifeat.org" },
+  // NOVEMBER
   { id: "12", name: "in-cosmetics Asia", type: "trade-show", date: "2026-11-03", location: "BITEC", city: "Bangkok", country: "Thailand", lat: 13.6624, lng: 100.6051, url: "https://www.in-cosmetics.com/asia", instagram: "https://instagram.com/in_cosmetics" },
-  { id: "13", name: "IFEAT Conference", type: "conference", date: "2026-11-05", location: "Hilton Singapore", city: "Singapore", country: "Singapore", lat: 1.3048, lng: 103.8318, url: "https://www.ifeat.org" },
-  { id: "14", name: "Cosmoprof Asia", type: "trade-show", date: "2026-11-10", location: "AsiaWorld-Expo", city: "Hong Kong", country: "China", lat: 22.3193, lng: 113.9148, url: "https://www.cosmoprof-asia.com", instagram: "https://instagram.com/cosmoprofasia" },
-  { id: "15", name: "Beautyworld Saudi Arabia", type: "trade-show", date: "2026-11-17", location: "Riyadh International Convention Center", city: "Riyadh", country: "Saudi Arabia", lat: 24.7136, lng: 46.6753, url: "https://beautyworld-saudi-arabia.ae.messefrankfurt.com" },
+  { id: "14", name: "Cosmoprof Asia", type: "trade-show", date: "2026-11-11", location: "Hong Kong Convention & Exhibition Centre", city: "Hong Kong", country: "China", lat: 22.2824, lng: 114.1747, url: "https://www.cosmoprof-asia.com", instagram: "https://instagram.com/cosmoprofasia" },
 ];
 
 // Real schools — verified perfumery education programs

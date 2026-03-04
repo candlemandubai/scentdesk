@@ -154,7 +154,7 @@ export default function Header() {
               olfactal.com
             </a>
 
-            <div className="h-4 w-px bg-scent-border" />
+            <div className="h-4 w-px bg-scent-border hidden sm:block" />
 
             {/* LIVE signal — green with grey text */}
             <button
@@ -212,10 +212,10 @@ export default function Header() {
               <Settings size={14} />
             </button>
 
-            {/* Fullscreen */}
+            {/* Fullscreen — hidden on mobile, doesn't make sense there */}
             <button
               onClick={toggleFullscreen}
-              className="text-gray-500 hover:text-gray-300 p-1.5 rounded hover:bg-white/5 transition-colors"
+              className="text-gray-500 hover:text-gray-300 p-1.5 rounded hover:bg-white/5 transition-colors hidden sm:block"
               title={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
             >
               {isFullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
@@ -242,13 +242,25 @@ export default function Header() {
               )}
             </button>
           ))}
-          <div className="ml-auto flex items-center gap-1 text-[10px] font-mono text-gray-600">
-            <MapPin size={10} />
-            <span>
-              {geoLocation
-                ? `${geoLocation.city}, ${geoLocation.country}`
-                : "Detecting location..."}
-            </span>
+          <div className="ml-auto flex items-center gap-2 text-[10px] font-mono text-gray-600 overflow-hidden">
+            {/* @candlemandubai — mobile only (hidden on desktop where it shows in top bar) */}
+            <a
+              href="https://instagram.com/candlemandubai"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-500 hover:text-scent-accent transition-colors sm:hidden whitespace-nowrap text-[9px]"
+            >
+              @candlemandubai
+            </a>
+            {/* Location — hidden on mobile to save space, shown on sm+ */}
+            <div className="hidden sm:flex items-center gap-1 whitespace-nowrap">
+              <MapPin size={10} />
+              <span>
+                {geoLocation
+                  ? `${geoLocation.city}, ${geoLocation.country}`
+                  : "Detecting location..."}
+              </span>
+            </div>
           </div>
         </div>
 
