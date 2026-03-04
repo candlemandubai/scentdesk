@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import WidgetWrapper, { CountBadge } from "./WidgetWrapper";
-import { ExternalLink, Building2, Globe, TrendingUp } from "lucide-react";
+import { ExternalLink, Building2, Globe, TrendingUp, Instagram } from "lucide-react";
 
 type HouseCategory = "all" | "major" | "niche" | "supplier" | "ingredient";
 
@@ -13,25 +13,26 @@ interface FragranceHouse {
   speciality: string;
   url: string;
   brands?: string[];
+  instagram?: string;
 }
 
 const fragranceHouses: FragranceHouse[] = [
-  { name: "Givaudan", type: "major", hq: "Vernier, Switzerland", revenue: "$7.1B", speciality: "Full-service fragrance & flavor house", url: "https://www.givaudan.com", brands: ["Fine Fragrance", "Consumer Products"] },
-  { name: "dsm-firmenich", type: "major", hq: "Kaiseraugst, Switzerland", revenue: "$13.2B", speciality: "Nutrition, health, beauty", url: "https://www.dsm-firmenich.com", brands: ["Perfumery", "Taste & Beyond"] },
-  { name: "IFF", type: "major", hq: "New York, USA", revenue: "$11.3B", speciality: "Scent, taste, nutrition", url: "https://www.iff.com", brands: ["Nourish", "Scent", "Health"] },
-  { name: "Symrise", type: "major", hq: "Holzminden, Germany", revenue: "$4.6B", speciality: "Flavor, fragrance, nutrition", url: "https://www.symrise.com", brands: ["Scent & Care", "Flavor"] },
-  { name: "Mane", type: "major", hq: "Le Bar-sur-Loup, France", revenue: "$2.1B", speciality: "Fragrance, flavor, ingredients", url: "https://www.mane.com", brands: ["Fine Fragrance", "Functional"] },
-  { name: "Robertet", type: "supplier", hq: "Grasse, France", revenue: "$710M", speciality: "Natural raw materials specialist", url: "https://www.robertet.com", brands: ["Naturals", "Organic"] },
-  { name: "Takasago", type: "major", hq: "Tokyo, Japan", revenue: "$1.8B", speciality: "Fragrance & flavor", url: "https://www.takasago.com", brands: ["Fragrance", "Flavor"] },
+  { name: "Givaudan", type: "major", hq: "Vernier, Switzerland", revenue: "$7.1B", speciality: "Full-service fragrance & flavor house", url: "https://www.givaudan.com", brands: ["Fine Fragrance", "Consumer Products"], instagram: "https://instagram.com/givaudan" },
+  { name: "dsm-firmenich", type: "major", hq: "Kaiseraugst, Switzerland", revenue: "$13.2B", speciality: "Nutrition, health, beauty", url: "https://www.dsm-firmenich.com", brands: ["Perfumery", "Taste & Beyond"], instagram: "https://instagram.com/dsmfirmenich" },
+  { name: "IFF", type: "major", hq: "New York, USA", revenue: "$11.3B", speciality: "Scent, taste, nutrition", url: "https://www.iff.com", brands: ["Nourish", "Scent", "Health"], instagram: "https://instagram.com/abordeliff" },
+  { name: "Symrise", type: "major", hq: "Holzminden, Germany", revenue: "$4.6B", speciality: "Flavor, fragrance, nutrition", url: "https://www.symrise.com", brands: ["Scent & Care", "Flavor"], instagram: "https://instagram.com/symrise" },
+  { name: "Mane", type: "major", hq: "Le Bar-sur-Loup, France", revenue: "$2.1B", speciality: "Fragrance, flavor, ingredients", url: "https://www.mane.com", brands: ["Fine Fragrance", "Functional"], instagram: "https://instagram.com/mabordelane_group" },
+  { name: "Robertet", type: "supplier", hq: "Grasse, France", revenue: "$710M", speciality: "Natural raw materials specialist", url: "https://www.robertet.com", brands: ["Naturals", "Organic"], instagram: "https://instagram.com/robertetgroup" },
+  { name: "Takasago", type: "major", hq: "Tokyo, Japan", revenue: "$1.8B", speciality: "Fragrance & flavor", url: "https://www.takasago.com", brands: ["Fragrance", "Flavor"], instagram: "https://instagram.com/takasago_international" },
   { name: "Sensient", type: "ingredient", hq: "Milwaukee, USA", revenue: "$1.5B", speciality: "Colors, flavors, fragrances", url: "https://www.sensient.com" },
-  { name: "Prolitec", type: "supplier", hq: "Baltimore, USA", speciality: "Ambient scenting solutions", url: "https://www.prolitec.com" },
-  { name: "Albert Vieille", type: "supplier", hq: "Grasse, France", speciality: "Natural essential oils & absolutes", url: "https://www.albertvieille.com" },
-  { name: "Biolandes", type: "supplier", hq: "Le Sen, France", speciality: "Organic & conventional essential oils", url: "https://www.biolandes.com" },
+  { name: "Prolitec", type: "supplier", hq: "Baltimore, USA", speciality: "Ambient scenting solutions", url: "https://www.prolitec.com", instagram: "https://instagram.com/prolitec" },
+  { name: "Albert Vieille", type: "supplier", hq: "Grasse, France", speciality: "Natural essential oils & absolutes", url: "https://www.albertvieille.com", instagram: "https://instagram.com/albertvieille" },
+  { name: "Biolandes", type: "supplier", hq: "Le Sen, France", speciality: "Organic & conventional essential oils", url: "https://www.biolandes.com", instagram: "https://instagram.com/biolandesgroup" },
   { name: "Payan Bertrand", type: "supplier", hq: "Grasse, France", speciality: "Naturals, absolutes, concretes", url: "https://www.payanbertrand.com" },
-  { name: "LVMH (Parfums)", type: "niche", hq: "Paris, France", revenue: "$86.2B*", speciality: "Dior, Givenchy, Guerlain, Kenzo", url: "https://www.lvmh.com", brands: ["Dior", "Guerlain", "Givenchy"] },
-  { name: "Puig", type: "niche", hq: "Barcelona, Spain", revenue: "$4.3B", speciality: "Byredo, Penhaligon's, L'Artisan Parfumeur", url: "https://www.puig.com", brands: ["Byredo", "Penhaligon's"] },
-  { name: "Kering (Beauté)", type: "niche", hq: "Paris, France", speciality: "Creed, Bottega Veneta, Balenciaga", url: "https://www.kering.com", brands: ["Creed", "Bottega Veneta"] },
-  { name: "Estée Lauder", type: "niche", hq: "New York, USA", revenue: "$15.9B", speciality: "Le Labo, Jo Malone, Tom Ford", url: "https://www.elcompanies.com", brands: ["Le Labo", "Jo Malone", "Tom Ford"] },
+  { name: "LVMH (Parfums)", type: "niche", hq: "Paris, France", revenue: "$86.2B*", speciality: "Dior, Givenchy, Guerlain, Kenzo", url: "https://www.lvmh.com", brands: ["Dior", "Guerlain", "Givenchy"], instagram: "https://instagram.com/lvmh" },
+  { name: "Puig", type: "niche", hq: "Barcelona, Spain", revenue: "$4.3B", speciality: "Byredo, Penhaligon's, L'Artisan Parfumeur", url: "https://www.puig.com", brands: ["Byredo", "Penhaligon's"], instagram: "https://instagram.com/puig" },
+  { name: "Kering (Beauté)", type: "niche", hq: "Paris, France", speciality: "Creed, Bottega Veneta, Balenciaga", url: "https://www.kering.com", brands: ["Creed", "Bottega Veneta"], instagram: "https://instagram.com/keringgroup" },
+  { name: "Estée Lauder", type: "niche", hq: "New York, USA", revenue: "$15.9B", speciality: "Le Labo, Jo Malone, Tom Ford", url: "https://www.elcompanies.com", brands: ["Le Labo", "Jo Malone", "Tom Ford"], instagram: "https://instagram.com/eabordelsteelaudercompanies" },
 ];
 
 const categoryLabels: Record<HouseCategory, string> = {
@@ -70,18 +71,21 @@ export default function Suppliers() {
 
       <div className="space-y-2">
         {filtered.map((house) => (
-          <a
+          <div
             key={house.name}
-            href={house.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group block hover:bg-white/[0.02] rounded p-2 -mx-2 border border-transparent hover:border-scent-border/50 transition-colors"
+            className="group block hover:bg-white/[0.02] rounded p-2 -mx-2 border border-transparent hover:border-scent-border/50 transition-colors cursor-pointer"
+            onClick={() => window.open(house.url, "_blank", "noopener,noreferrer")}
           >
             <div className="flex items-start justify-between mb-1">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded bg-gradient-to-br from-scent-accent/20 to-scent-accent/5 flex items-center justify-center shrink-0">
-                  <Building2 size={12} className="text-scent-accent" />
-                </div>
+                <img
+                  src={`https://www.google.com/s2/favicons?domain=${new URL(house.url).hostname}&sz=32`}
+                  alt={house.name}
+                  width={28}
+                  height={28}
+                  className="w-7 h-7 rounded bg-scent-bg shrink-0 object-contain"
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                />
                 <div>
                   <span className="text-[12px] text-gray-200 font-medium group-hover:text-white transition-colors flex items-center gap-1.5">
                     {house.name}
@@ -91,6 +95,18 @@ export default function Suppliers() {
                     <span className="flex items-center gap-1 text-[9px] text-gray-500">
                       <Globe size={8} /> {house.hq}
                     </span>
+                    {house.instagram && (
+                      <a
+                        href={house.instagram}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-600 hover:text-scent-accent transition-colors"
+                        onClick={(e) => e.stopPropagation()}
+                        title="Instagram"
+                      >
+                        <Instagram size={10} />
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>
@@ -108,7 +124,7 @@ export default function Suppliers() {
                 ))}
               </div>
             )}
-          </a>
+          </div>
         ))}
       </div>
     </WidgetWrapper>

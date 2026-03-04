@@ -1,35 +1,42 @@
 "use client";
-import { useState, useEffect } from "react";
-import Link from "next/link";
+import { useState, useEffect, useCallback } from "react";
 import { useDashboardStore } from "@/store/dashboardStore";
 import { useAnalyticsStore } from "@/store/analyticsStore";
-import { createEvent, formatDuration } from "@/lib/analytics";
+import { createEvent } from "@/lib/analytics";
 import {
   Search,
   Radio,
   Settings,
-  BarChart3,
   MapPin,
-  X,
+  Maximize2,
+  Minimize2,
+  Sun,
+  Moon,
 } from "lucide-react";
 import type { DashboardTab } from "@/types";
+import CommandPalette from "@/components/layout/CommandPalette";
+import SettingsDialog from "@/components/layout/SettingsDialog";
+import ShareButton from "@/components/layout/ShareButton";
 
 const tabs: { id: DashboardTab; label: string; shortLabel: string }[] = [
-  { id: "market", label: "Market", shortLabel: "MKT" },
-  { id: "raw-materials", label: "Raw Materials", shortLabel: "RAW" },
-  { id: "home-fragrances", label: "Home Fragrances", shortLabel: "HOME" },
-  { id: "trends", label: "Trends", shortLabel: "TRD" },
-  { id: "local", label: "Local / Events", shortLabel: "LOC" },
+  { id: "feed", label: "Live Feed", shortLabel: "FEED" },
+  { id: "directory", label: "Industry Directory", shortLabel: "DIR" },
 ];
 
 export default function Header() {
-  const { activeTab, setActiveTab, searchQuery, setSearchQuery, isLive, toggleLive } = useDashboardStore();
-  const { trackEvent, totalClicks, totalPageViews, getSessionDuration } = useAnalyticsStore();
-  const [showSearch, setShowSearch] = useState(false);
-  const [showStats, setShowStats] = useState(false);
+  const activeTab = useDashboardStore((s) => s.activeTab);
+  const setActiveTab = useDashboardStore((s) => s.setActiveTab);
+  const isLive = useDashboardStore((s) => s.isLive);
+  const toggleLive = useDashboardStore((s) => s.toggleLive);
+  const trackEvent = useAnalyticsStore((s) => s.trackEvent);
+  const [showCommandPalette, setShowCommandPalette] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [currentTime, setCurrentTime] = useState("");
-  const [sessionTime, setSessionTime] = useState("0s");
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isDark, setIsDark] = useState(true);
+  const [geoLocation, setGeoLocation] = useState<{ city: string; country: string } | null>(null);
 
+  // Clock
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(
@@ -44,158 +51,219 @@ export default function Header() {
           hour12: false,
         }).toUpperCase()
       );
-      setSessionTime(formatDuration(getSessionDuration()));
     }, 1000);
     return () => clearInterval(interval);
-  }, [getSessionDuration]);
+  }, []);
+
+  // Geolocation — detect country/city
+  useEffect(() => {
+    fetch("https://ipapi.co/json/")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.city && d.country_name) {
+          setGeoLocation({ city: d.city, country: d.country_name });
+        }
+      })
+      .catch(() => {
+        // Fallback — try alternative
+        fetch("https://get.geojs.io/v1/ip/geo.json")
+          .then((r) => r.json())
+          .then((d) => {
+            if (d.city && d.country) {
+              setGeoLocation({ city: d.city, country: d.country });
+            }
+          })
+          .catch(() => setGeoLocation(null));
+      });
+  }, []);
+
+  // ⌘K / Ctrl+K shortcut for command palette
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setShowCommandPalette(true);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  // Fullscreen listener
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, []);
 
   const handleTabChange = (tab: DashboardTab) => {
     setActiveTab(tab);
     trackEvent(createEvent("tab_change", { tab }));
   };
 
+  const toggleFullscreen = useCallback(() => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      document.documentElement.requestFullscreen();
+    }
+  }, []);
+
+  const toggleTheme = useCallback(() => {
+    setIsDark((prev) => {
+      const next = !prev;
+      if (next) {
+        document.documentElement.classList.remove("theme-light");
+      } else {
+        document.documentElement.classList.add("theme-light");
+      }
+      return next;
+    });
+  }, []);
+
   return (
-    <header className="bg-scent-surface border-b border-scent-border sticky top-0 z-50">
-      {/* Top bar */}
-      <div className="flex items-center justify-between px-4 h-11">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-scent-accent" />
-            <span className="text-[13px] font-mono font-bold tracking-wider text-white">
-              SCENT<span className="text-scent-accent">DESK</span>
-            </span>
-            <span className="text-[10px] font-mono text-gray-600">v1.0.0</span>
+    <>
+      <header className="bg-scent-surface border-b border-scent-border sticky top-0 z-50">
+        {/* Top bar */}
+        <div className="flex items-center justify-between px-4 h-11">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-scent-accent" />
+              <span className="text-[13px] font-mono font-bold tracking-wider text-white">
+                SCENT<span className="text-scent-accent">DESK</span>
+              </span>
+              <span className="text-[10px] font-mono text-gray-600">v1.0.0</span>
+            </div>
+
+            <a
+              href="https://instagram.com/candlemandubai"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[10px] font-mono text-gray-500 hover:text-scent-accent transition-colors hidden sm:block"
+            >
+              @candlemandubai
+            </a>
+            <a
+              href="https://olfactal.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[10px] font-mono text-gray-500 hover:text-scent-accent transition-colors hidden sm:block"
+            >
+              olfactal.com
+            </a>
+
+            <div className="h-4 w-px bg-scent-border" />
+
+            {/* LIVE signal — green with grey text */}
+            <button
+              onClick={toggleLive}
+              className="flex items-center gap-1.5 text-[10px] font-mono font-semibold px-2 py-1 rounded transition-colors text-gray-400 hover:text-gray-200"
+            >
+              {isLive ? (
+                <>
+                  <span className="live-dot" style={{ width: 8, height: 8 }} />
+                  <span className="text-gray-400">LIVE</span>
+                </>
+              ) : (
+                <>
+                  <Radio size={10} className="text-gray-500" />
+                  <span className="text-gray-500">PAUSED</span>
+                </>
+              )}
+            </button>
+
+            <div className="h-4 w-px bg-scent-border hidden md:block" />
+            <span className="text-[10px] font-mono text-gray-500 hidden md:block">{currentTime}</span>
           </div>
 
-          <a
-            href="https://instagram.com/candlemandubai"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[10px] font-mono text-gray-500 hover:text-scent-accent transition-colors"
-          >
-            @candlemandubai
-          </a>
+          <div className="flex items-center gap-1.5">
+            {/* Session time shown subtly — analytics detail in admin only */}
 
-          <div className="h-4 w-px bg-scent-border" />
-
-          <button
-            onClick={toggleLive}
-            className={`flex items-center gap-1.5 text-[10px] font-mono font-semibold px-2 py-1 rounded transition-colors ${
-              isLive ? "text-red-400" : "text-gray-500 hover:text-gray-300"
-            }`}
-          >
-            <Radio size={10} className={isLive ? "animate-pulse" : ""} />
-            {isLive ? "LIVE" : "PAUSED"}
-          </button>
-
-          <div className="h-4 w-px bg-scent-border hidden md:block" />
-          <span className="text-[10px] font-mono text-gray-500 hidden md:block">{currentTime}</span>
-        </div>
-
-        <div className="flex items-center gap-2">
-          {/* Quick stats */}
-          <button
-            onClick={() => setShowStats(!showStats)}
-            className="flex items-center gap-1.5 text-[10px] font-mono text-gray-500 hover:text-gray-300 px-2 py-1 rounded hover:bg-white/5 transition-colors"
-          >
-            <BarChart3 size={12} />
-            <span className="hidden sm:inline">{totalPageViews} views</span>
-            <span className="hidden sm:inline text-gray-600">|</span>
-            <span className="hidden sm:inline">{totalClicks} clicks</span>
-            <span className="hidden sm:inline text-gray-600">|</span>
-            <span className="hidden sm:inline">{sessionTime}</span>
-          </button>
-
-          <div className="h-4 w-px bg-scent-border" />
-
-          <button
-            onClick={() => setShowSearch(!showSearch)}
-            className="text-gray-500 hover:text-gray-300 p-1.5 rounded hover:bg-white/5 transition-colors"
-          >
-            <Search size={14} />
-          </button>
-
-          <Link
-            href="/admin"
-            className="flex items-center gap-1 text-gray-500 hover:text-gray-300 p-1.5 rounded hover:bg-white/5 transition-colors"
-          >
-            <Settings size={14} />
-          </Link>
-        </div>
-      </div>
-
-      {/* Search bar */}
-      {showSearch && (
-        <div className="px-4 pb-2 animate-slide-up">
-          <div className="relative">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search news, materials, brands, events..."
-              className="w-full bg-scent-bg border border-scent-border rounded-lg pl-9 pr-9 py-2 text-[13px] text-white placeholder-gray-600 focus:outline-none focus:border-scent-accent/50 font-mono"
-              autoFocus
-            />
+            {/* Search — opens command palette */}
             <button
-              onClick={() => { setShowSearch(false); setSearchQuery(""); }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
+              onClick={() => setShowCommandPalette(true)}
+              className="flex items-center gap-1.5 text-gray-500 hover:text-gray-300 px-2 py-1 rounded hover:bg-white/5 transition-colors"
+              title="Search (⌘K)"
             >
-              <X size={14} />
+              <Search size={14} />
+              <span className="text-[10px] font-mono text-gray-600 hidden md:inline">⌘K</span>
+            </button>
+
+            {/* Share */}
+            <ShareButton compact />
+
+            {/* Theme toggle */}
+            <button
+              onClick={toggleTheme}
+              className="text-gray-500 hover:text-gray-300 p-1.5 rounded hover:bg-white/5 transition-colors"
+              title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {isDark ? <Sun size={14} /> : <Moon size={14} />}
+            </button>
+
+            {/* Settings */}
+            <button
+              onClick={() => setShowSettings(true)}
+              className="text-gray-500 hover:text-gray-300 p-1.5 rounded hover:bg-white/5 transition-colors"
+              title="Settings"
+            >
+              <Settings size={14} />
+            </button>
+
+            {/* Fullscreen */}
+            <button
+              onClick={toggleFullscreen}
+              className="text-gray-500 hover:text-gray-300 p-1.5 rounded hover:bg-white/5 transition-colors"
+              title={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
+            >
+              {isFullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
             </button>
           </div>
         </div>
-      )}
 
-      {/* Tab navigation */}
-      <div className="flex items-center gap-0.5 px-4 border-t border-scent-border">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => handleTabChange(tab.id)}
-            className={`px-4 py-2.5 text-[11px] font-mono font-semibold uppercase tracking-wider transition-all relative ${
-              activeTab === tab.id
-                ? "text-scent-accent"
-                : "text-gray-500 hover:text-gray-300"
-            }`}
-          >
-            <span className="hidden sm:inline">{tab.label}</span>
-            <span className="sm:hidden">{tab.shortLabel}</span>
-            {activeTab === tab.id && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-scent-accent" />
-            )}
-          </button>
-        ))}
-        <div className="ml-auto flex items-center gap-1 text-[10px] font-mono text-gray-600">
-          <MapPin size={10} />
-          <span>Geolocation Active</span>
-        </div>
-      </div>
-
-      {/* Stats dropdown */}
-      {showStats && (
-        <div className="absolute right-4 top-12 bg-scent-card border border-scent-border rounded-lg p-4 shadow-xl z-50 animate-slide-up min-w-[250px]">
-          <div className="text-[10px] font-mono text-gray-500 uppercase tracking-wider mb-3">Session Analytics</div>
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <span className="text-[12px] text-gray-400">Page Views</span>
-              <span className="text-[12px] font-mono text-white">{totalPageViews}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-[12px] text-gray-400">Widget Clicks</span>
-              <span className="text-[12px] font-mono text-white">{totalClicks}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-[12px] text-gray-400">Session Duration</span>
-              <span className="text-[12px] font-mono text-white">{sessionTime}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-[12px] text-gray-400">Active Tab</span>
-              <span className="text-[12px] font-mono text-scent-accent">{activeTab}</span>
-            </div>
+        {/* Tab navigation */}
+        <div className="flex items-center gap-0.5 px-4 border-t border-scent-border">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => handleTabChange(tab.id)}
+              className={`px-4 py-2.5 text-[11px] font-mono font-semibold uppercase tracking-wider transition-all relative ${
+                activeTab === tab.id
+                  ? "text-scent-accent"
+                  : "text-gray-500 hover:text-gray-300"
+              }`}
+            >
+              <span className="hidden sm:inline">{tab.label}</span>
+              <span className="sm:hidden">{tab.shortLabel}</span>
+              {activeTab === tab.id && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-scent-accent" />
+              )}
+            </button>
+          ))}
+          <div className="ml-auto flex items-center gap-1 text-[10px] font-mono text-gray-600">
+            <MapPin size={10} />
+            <span>
+              {geoLocation
+                ? `${geoLocation.city}, ${geoLocation.country}`
+                : "Detecting location..."}
+            </span>
           </div>
         </div>
+
+        {/* Analytics available in admin dashboard only */}
+      </header>
+
+      {/* Command Palette */}
+      {showCommandPalette && (
+        <CommandPalette onClose={() => setShowCommandPalette(false)} />
       )}
-    </header>
+
+      {/* Settings Dialog */}
+      {showSettings && (
+        <SettingsDialog onClose={() => setShowSettings(false)} />
+      )}
+    </>
   );
 }

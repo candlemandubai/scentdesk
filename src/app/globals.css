@@ -81,23 +81,106 @@ body {
   overflow-x: hidden;
 }
 
-/* Live indicator */
+/* Live indicator — green signal */
 .live-dot {
   width: 8px;
   height: 8px;
-  background: #ef4444;
+  background: #34d399;
   border-radius: 50%;
   animation: livePulse 2s ease-in-out infinite;
 }
 
 @keyframes livePulse {
-  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-  50% { opacity: 0.8; box-shadow: 0 0 0 4px rgba(239, 68, 68, 0); }
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.4); }
+  50% { opacity: 0.8; box-shadow: 0 0 0 4px rgba(52, 211, 153, 0); }
+}
+
+/* Command Palette overlay */
+.command-palette-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 15vh;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.command-palette {
+  background: #111827;
+  border: 1px solid #2a3a4d;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 640px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  animation: slideUp 0.2s ease-out;
+}
+
+/* Settings dialog */
+.settings-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.settings-dialog {
+  background: #111827;
+  border: 1px solid #2a3a4d;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 700px;
+  max-height: 85vh;
+  overflow: hidden;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.2s ease-out;
+}
+
+/* Light theme */
+.theme-light {
+  --bg: #f5f5f0;
+  --surface: #ffffff;
+  --card: #fafaf8;
+  --border: #e5e5e0;
+  --accent: #b8956a;
+}
+
+.theme-light body,
+.theme-light {
+  background: var(--bg);
+  color: #1a1a1a;
+}
+
+.theme-light .widget-card {
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+.theme-light .widget-card:hover {
+  border-color: #d0d0c8;
+}
+
+.theme-light .widget-header {
+  border-bottom-color: var(--border);
+  color: #4a4a4a;
+}
+
+.theme-light .widget-body {
+  color: #333;
 }
 
 /* Ticker */
 .ticker-scroll {
-  animation: tickerScroll 60s linear infinite;
+  animation: tickerScroll 180s linear infinite;
 }
 
 @keyframes tickerScroll {

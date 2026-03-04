@@ -42,11 +42,12 @@ const homeFaqs = [
 ];
 
 export default function Home() {
-  const { trackEvent } = useAnalyticsStore();
+  const trackEvent = useAnalyticsStore((s) => s.trackEvent);
 
   useEffect(() => {
     trackEvent(createEvent("page_view"));
-  }, [trackEvent]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <main className="min-h-screen bg-scent-bg">

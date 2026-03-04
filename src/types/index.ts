@@ -13,42 +13,24 @@ export interface Widget {
 }
 
 export type DashboardTab =
-  | "market"
-  | "raw-materials"
-  | "home-fragrances"
-  | "trends"
-  | "local";
+  | "feed"
+  | "directory";
 
 export type WidgetType =
   | "news-feed"
-  | "raw-materials-prices"
-  | "market-overview"
-  | "brand-launches"
-  | "trending-ingredients"
-  | "home-fragrance-market"
-  | "candles-tracker"
-  | "diffusers-market"
-  | "room-sprays"
-  | "seasonal-trends"
-  | "ai-insights"
-  | "events-calendar"
-  | "jobs-board"
-  | "schools"
-  | "sustainability"
+  | "news-market"
+  | "news-launches"
+  | "news-materials"
+  | "news-home"
   | "regulatory-updates"
-  | "regional-data"
   | "world-clock"
-  | "market-heatmap"
-  | "supply-chain"
-  | "fragrance-index"
-  | "top-sellers"
-  | "community-feed"
-  | "consumer-trends"
-  | "fragrance-families"
-  | "social-buzz"
+  | "events-calendar"
+  | "schools"
   | "suppliers"
-  | "fragrance-of-the-day"
-  | "quick-converter";
+  | "useful-apps"
+  | "newsletter-signup"
+  | "perfumer-spotlight"
+  | "jobs-board";
 
 export interface NewsItem {
   id: string;
@@ -59,25 +41,6 @@ export interface NewsItem {
   url: string;
   sentiment?: "positive" | "negative" | "neutral";
   region?: string;
-}
-
-export interface RawMaterial {
-  id: string;
-  name: string;
-  category: "essential-oil" | "aroma-chemical" | "natural" | "synthetic";
-  price: number;
-  unit: string;
-  change24h: number;
-  change7d: number;
-  origin: string;
-  supply: "abundant" | "normal" | "tight" | "critical";
-}
-
-export interface MarketData {
-  segment: string;
-  value: number;
-  growth: number;
-  trend: "up" | "down" | "stable";
 }
 
 export interface FragranceEvent {
@@ -91,18 +54,7 @@ export interface FragranceEvent {
   lat?: number;
   lng?: number;
   url?: string;
-}
-
-export interface Job {
-  id: string;
-  title: string;
-  company: string;
-  location: string;
-  type: "full-time" | "part-time" | "contract" | "freelance";
-  category: "perfumer" | "marketing" | "production" | "research" | "sales" | "quality";
-  posted: string;
-  salary?: string;
-  url?: string;
+  instagram?: string;
 }
 
 export interface School {
@@ -113,18 +65,7 @@ export interface School {
   type: "university" | "institute" | "online" | "workshop";
   programs: string[];
   url?: string;
-}
-
-export interface HomeFragranceProduct {
-  id: string;
-  category: "candle" | "diffuser" | "room-spray" | "wax-melt" | "incense";
-  brand: string;
-  name: string;
-  price: number;
-  rating: number;
-  trend: "rising" | "falling" | "stable";
-  region: string;
-  url?: string;
+  instagram?: string;
 }
 
 export interface AnalyticsEvent {
@@ -140,7 +81,7 @@ export interface AdminFeature {
   id: string;
   name: string;
   description: string;
-  category: "widgets" | "features" | "data-sources" | "ui" | "analytics";
+  category: "widgets" | "features" | "data-sources" | "ui" | "analytics" | "monetization";
   enabled: boolean;
   subFeatures?: AdminFeature[];
 }

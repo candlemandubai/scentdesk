@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import Parser from "rss-parser";
+import { stripHtml, sanitizeUrl } from "@/lib/sanitize";
 
 const parser = new Parser({
   timeout: 8000,
@@ -30,6 +31,9 @@ const RSS_FEEDS: FeedSource[] = [
   { url: "https://news.google.com/rss/search?q=Givaudan+OR+IFF+OR+Firmenich+OR+Symrise+fragrance&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "M&A" },
   { url: "https://news.google.com/rss/search?q=new+perfume+launch+2026+OR+fragrance+launch&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Launches" },
   { url: "https://news.google.com/rss/search?q=essential+oils+price+OR+raw+materials+fragrance+OR+vanilla+price+OR+sandalwood+price&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Raw Materials" },
+  // Home fragrance — candles, diffusers, room sprays
+  { url: "https://news.google.com/rss/search?q=scented+candle+market+OR+candle+industry+OR+luxury+candles+brand&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Home Fragrance" },
+  { url: "https://news.google.com/rss/search?q=reed+diffuser+market+OR+room+spray+market+OR+home+fragrance+industry&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Home Fragrance" },
 ];
 
 function getTimeSince(dateStr: string): string {
@@ -68,22 +72,47 @@ function guessRegion(title: string, content?: string): string {
   return "Global";
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const feedPromises = RSS_FEEDS.map(async (feed) => {
+    const { searchParams } = new URL(request.url);
+    const dateParam = searchParams.get("date"); // YYYY-MM-DD
+
+    // Build feeds — for Google News, inject date range if requested
+    const feeds = dateParam
+      ? RSS_FEEDS.map((feed) => {
+          if (feed.source !== "Google News") return feed;
+          const sep = feed.url.includes("?") ? "+" : "?q=";
+          const dateUrl = feed.url.replace(
+            /(&hl=)/,
+            `+after:${dateParam}+before:${dateParam}$1`
+          );
+          return { ...feed, url: dateUrl };
+        })
+      : RSS_FEEDS;
+
+    const feedPromises = feeds.map(async (feed) => {
       try {
         const parsed = await parser.parseURL(feed.url);
-        return (parsed.items || []).slice(0, 5).map((item, idx) => ({
+        return (parsed.items || []).slice(0, 5).map((item, idx) => {
+          const rawTitle = stripHtml(item.title || "") || "Untitled";
+          // Google News titles end with " - Source Name" — extract real source
+          const isGoogleNews = feed.source === "Google News";
+          const dashIdx = rawTitle.lastIndexOf(" - ");
+          const realSource = isGoogleNews && dashIdx > 0 ? rawTitle.slice(dashIdx + 3).trim() : "";
+          const cleanTitle = isGoogleNews && dashIdx > 0 ? rawTitle.slice(0, dashIdx).trim() : rawTitle;
+
+          return ({
           id: `${feed.source}-${idx}-${Date.now()}`,
-          title: item.title?.replace(/<[^>]+>/g, "").trim() || "Untitled",
-          source: item.creator || feed.source,
+          title: cleanTitle,
+          source: realSource || stripHtml(item.creator || "") || feed.source,
           category: feed.category,
           timestamp: getTimeSince(item.pubDate || item.isoDate || new Date().toISOString()),
           pubDate: item.pubDate || item.isoDate || new Date().toISOString(),
-          url: item.link || "#",
-          sentiment: guessSentiment(item.title || ""),
-          region: guessRegion(item.title || "", item.contentSnippet),
-        }));
+          url: sanitizeUrl(item.link || "#"),
+          sentiment: guessSentiment(cleanTitle),
+          region: guessRegion(cleanTitle, item.contentSnippet),
+        });
+        });
       } catch {
         return [];
       }

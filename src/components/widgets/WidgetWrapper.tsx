@@ -1,17 +1,24 @@
 "use client";
-import { ReactNode, useState, useRef, useEffect, useCallback } from "react";
+import { ReactNode, useState, useRef, useEffect, useCallback, createContext, useContext } from "react";
 import { MoreHorizontal, Info } from "lucide-react";
+
+// Context to pass drag handle from DashboardGrid → WidgetWrapper
+const DragHandleContext = createContext<ReactNode>(null);
+export const DragHandleProvider = DragHandleContext.Provider;
 
 interface WidgetWrapperProps {
   title: string;
   badge?: ReactNode;
   children: ReactNode;
   headerRight?: ReactNode;
+  dragHandle?: ReactNode;
   className?: string;
   info?: string;
 }
 
-export default function WidgetWrapper({ title, badge, children, headerRight, className = "", info }: WidgetWrapperProps) {
+export default function WidgetWrapper({ title, badge, children, headerRight, dragHandle, className = "", info }: WidgetWrapperProps) {
+  const contextDragHandle = useContext(DragHandleContext);
+  const resolvedDragHandle = dragHandle || contextDragHandle;
   const [showInfo, setShowInfo] = useState(false);
   const tooltipRef = useRef<HTMLDivElement>(null);
 
@@ -66,6 +73,7 @@ export default function WidgetWrapper({ title, badge, children, headerRight, cla
         </div>
         <div className="flex items-center gap-2 shrink-0">
           {headerRight}
+          {resolvedDragHandle}
           <button className="text-gray-500 hover:text-gray-300 transition-colors">
             <MoreHorizontal size={14} />
           </button>
@@ -78,7 +86,7 @@ export default function WidgetWrapper({ title, badge, children, headerRight, cla
 
 export function LiveBadge() {
   return (
-    <span className="flex items-center gap-1.5 text-[10px] font-bold text-red-400">
+    <span className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-400">
       <span className="live-dot" />
       LIVE
     </span>

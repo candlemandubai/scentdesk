@@ -2,7 +2,7 @@
 import { useState } from "react";
 import WidgetWrapper, { CountBadge } from "./WidgetWrapper";
 import { mockEvents } from "@/data/mockData";
-import { MapPin, ExternalLink } from "lucide-react";
+import { MapPin, ExternalLink, Instagram } from "lucide-react";
 
 type EventType = "all" | "trade-show" | "conference" | "workshop" | "launch" | "webinar";
 
@@ -54,12 +54,10 @@ export default function EventsCalendar() {
           const daysUntil = Math.ceil((eventDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
 
           return (
-            <a
+            <div
               key={event.id}
-              href={event.url || "#"}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex gap-3 hover:bg-white/[0.02] rounded p-1.5 -mx-1.5 cursor-pointer block"
+              className="group flex gap-3 hover:bg-white/[0.02] rounded p-1.5 -mx-1.5 cursor-pointer"
+              onClick={() => window.open(event.url || "#", "_blank", "noopener,noreferrer")}
             >
               <div className="shrink-0 w-12 text-center">
                 <div className="text-[10px] font-mono text-gray-500 uppercase">
@@ -81,6 +79,18 @@ export default function EventsCalendar() {
                   <span className="flex items-center gap-1 text-[10px] text-gray-500">
                     <MapPin size={9} /> {event.city}, {event.country}
                   </span>
+                  {event.instagram && (
+                    <a
+                      href={event.instagram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gray-600 hover:text-scent-accent transition-colors"
+                      onClick={(e) => e.stopPropagation()}
+                      title="Instagram"
+                    >
+                      <Instagram size={10} />
+                    </a>
+                  )}
                 </div>
                 {isUpcoming && daysUntil > 0 && (
                   <span className="text-[10px] font-mono text-scent-accent mt-0.5 block">
@@ -88,7 +98,7 @@ export default function EventsCalendar() {
                   </span>
                 )}
               </div>
-            </a>
+            </div>
           );
         })}
       </div>

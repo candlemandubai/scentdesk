@@ -17,6 +17,7 @@ interface DashboardState {
   updateWidgetPosition: (id: string, x: number, y: number) => void;
   updateWidgetSize: (id: string, w: number, h: number) => void;
   toggleWidget: (id: string) => void;
+  reorderWidgets: (tab: DashboardTab, orderedIds: string[]) => void;
   resetLayout: () => void;
   updateLayouts: (widgets: Widget[]) => void;
 }
@@ -24,7 +25,7 @@ interface DashboardState {
 export const useDashboardStore = create<DashboardState>()(
   persist(
     (set) => ({
-      activeTab: "market",
+      activeTab: "feed",
       widgets: defaultWidgets,
       searchQuery: "",
       isLive: true,
@@ -49,9 +50,37 @@ export const useDashboardStore = create<DashboardState>()(
             w.id === id ? { ...w, enabled: !w.enabled } : w
           ),
         })),
+      reorderWidgets: (tab, orderedIds) =>
+        set((s) => {
+          const tabWidgets = s.widgets.filter((w) => w.tab === tab && w.enabled);
+          const otherWidgets = s.widgets.filter((w) => w.tab !== tab || !w.enabled);
+          const ordered = orderedIds
+            .map((id) => tabWidgets.find((w) => w.id === id))
+            .filter(Boolean) as Widget[];
+          return { widgets: [...ordered, ...otherWidgets] };
+        }),
       resetLayout: () => set({ widgets: defaultWidgets }),
       updateLayouts: (widgets) => set({ widgets }),
     }),
-    { name: "scent-desk-dashboard" }
+    {
+      name: "scent-desk-v2",
+      version: 4,
+      migrate: (persisted: unknown, version: number) => {
+        const state = persisted as DashboardState;
+        if (version < 4) {
+          // Merge any new default widgets that don't exist in persisted state
+          const existingIds = new Set(state.widgets.map((w) => w.id));
+          const newWidgets = defaultWidgets.filter((w) => !existingIds.has(w.id));
+          return { ...state, widgets: [...state.widgets, ...newWidgets] };
+        }
+        // Always merge new defaults for any version
+        const existingIds = new Set(state.widgets.map((w) => w.id));
+        const newWidgets = defaultWidgets.filter((w) => !existingIds.has(w.id));
+        if (newWidgets.length > 0) {
+          return { ...state, widgets: [...state.widgets, ...newWidgets] };
+        }
+        return state;
+      },
+    }
   )
 );
