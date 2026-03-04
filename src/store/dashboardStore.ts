@@ -64,14 +64,20 @@ export const useDashboardStore = create<DashboardState>()(
     }),
     {
       name: "scent-desk-v2",
-      version: 6,
+      version: 7,
       migrate: (persisted: unknown, version: number) => {
         const state = persisted as DashboardState;
-        if (version < 6) {
-          // Merge any new default widgets that don't exist in persisted state
-          const existingIds = new Set(state.widgets.map((w) => w.id));
-          const newWidgets = defaultWidgets.filter((w) => !existingIds.has(w.id));
-          return { ...state, widgets: [...state.widgets, ...newWidgets] };
+        if (version < 7) {
+          // Reset widget order to match defaultWidgets while preserving enabled state
+          const enabledMap = new Map(state.widgets.map((w) => [w.id, w.enabled]));
+          const merged = defaultWidgets.map((dw) => ({
+            ...dw,
+            enabled: enabledMap.has(dw.id) ? enabledMap.get(dw.id)! : dw.enabled,
+          }));
+          // Add any user widgets not in defaults (shouldn't happen, but just in case)
+          const defaultIds = new Set(defaultWidgets.map((w) => w.id));
+          const extras = state.widgets.filter((w) => !defaultIds.has(w.id));
+          return { ...state, widgets: [...merged, ...extras] };
         }
         // Always merge new defaults for any version
         const existingIds = new Set(state.widgets.map((w) => w.id));

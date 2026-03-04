@@ -167,6 +167,7 @@ body {
 
 .theme-light .widget-card:hover {
   border-color: #d0d0c8;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
 }
 
 .theme-light .widget-header {
@@ -177,6 +178,60 @@ body {
 .theme-light .widget-body {
   color: #333;
 }
+
+/* Light theme — Tailwind color overrides */
+.theme-light .text-white { color: #111 !important; }
+.theme-light .text-gray-200 { color: #1a1a1a !important; }
+.theme-light .text-gray-300 { color: #333 !important; }
+.theme-light .text-gray-400 { color: #555 !important; }
+.theme-light .text-gray-500 { color: #666 !important; }
+.theme-light .text-gray-600 { color: #777 !important; }
+.theme-light .text-gray-700 { color: #888 !important; }
+
+/* Light theme — backgrounds */
+.theme-light .bg-scent-bg { background: var(--bg) !important; }
+.theme-light .bg-scent-surface { background: var(--surface) !important; }
+.theme-light .bg-\[\#111827\] { background: var(--surface) !important; }
+.theme-light .bg-\[\#0a0e17\] { background: var(--bg) !important; }
+.theme-light .bg-\[\#1a2332\] { background: var(--card) !important; }
+
+/* Light theme — borders */
+.theme-light .border-scent-border { border-color: var(--border) !important; }
+.theme-light .border-\[\#1e2d3d\] { border-color: var(--border) !important; }
+.theme-light .border-\[\#2a3a4d\] { border-color: #d5d5d0 !important; }
+
+/* Light theme — header & sticky elements */
+.theme-light header { background: var(--surface) !important; border-color: var(--border) !important; }
+.theme-light .command-palette { background: var(--surface) !important; border-color: var(--border) !important; }
+.theme-light .settings-dialog { background: var(--surface) !important; border-color: var(--border) !important; }
+.theme-light .command-palette-overlay { background: rgba(0, 0, 0, 0.3) !important; }
+.theme-light .settings-overlay { background: rgba(0, 0, 0, 0.3) !important; }
+
+/* Light theme — accent text stays warm */
+.theme-light .text-scent-accent { color: var(--accent) !important; }
+
+/* Light theme — scrollbar */
+.theme-light ::-webkit-scrollbar-thumb { background: #ccc; }
+.theme-light ::-webkit-scrollbar-thumb:hover { background: #aaa; }
+
+/* Light theme — badges */
+.theme-light .badge-green { background: rgba(16, 185, 129, 0.1); color: #059669; }
+.theme-light .badge-red { background: rgba(239, 68, 68, 0.1); color: #dc2626; }
+.theme-light .badge-amber { background: rgba(245, 158, 11, 0.1); color: #d97706; }
+.theme-light .badge-blue { background: rgba(59, 130, 246, 0.1); color: #2563eb; }
+.theme-light .badge-gold { background: rgba(180, 140, 90, 0.1); color: #92702e; }
+
+/* Light theme — live dot */
+.theme-light .live-dot { background: #10b981; }
+
+/* Light theme — ticker */
+.theme-light .bg-scent-surface\/90 { background: rgba(255, 255, 255, 0.9) !important; }
+
+/* Light theme — links and hover states */
+.theme-light a:hover .text-white,
+.theme-light .group-hover\:text-white:hover { color: #000 !important; }
+.theme-light .hover\:text-white:hover { color: #000 !important; }
+.theme-light .hover\:text-gray-300:hover { color: #222 !important; }
 
 /* Ticker */
 .ticker-scroll {
