@@ -57,7 +57,7 @@ export default function Home() {
       "  We're open source because we think the fragrance\n" +
       "  industry deserves better access to data.\n\n" +
       "  Want to contribute? We'd love that.\n\n" +
-      "  GitHub:     github.com/adameli2023/scentdesk\n" +
+      "  GitHub:     github.com/candlemandubai/scentdesk\n" +
       "  Email:      hello@olfactal.com\n" +
       "  Instagram:  @candlemandubai\n" +
       "  Web:        candlestart.com | olfactal.com\n",

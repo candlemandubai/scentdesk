@@ -41,7 +41,7 @@ This project is open source because we believe the fragrance community deserves 
 ### Running locally
 
 ```bash
-git clone https://github.com/adameli2023/scentdesk.git
+git clone https://github.com/candlemandubai/scentdesk.git
 cd scentdesk
 npm install
 npm run dev
