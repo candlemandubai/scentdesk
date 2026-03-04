@@ -98,7 +98,7 @@ export default function DailyBrief() {
           AI
         </span>
       }
-      info="AI-generated daily summary of fragrance industry news. Powered by Claude — refreshed twice daily from live RSS feeds."
+      info="AI-generated daily summary of fragrance industry news. Powered by olfactal.com — refreshed twice daily from live RSS feeds."
       headerRight={
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1 text-[9px] font-mono text-gray-600">
@@ -158,9 +158,9 @@ export default function DailyBrief() {
               ? `Analyzed ${brief.newsCount} sources`
               : "Awaiting first AI analysis"}
           </span>
-          <span className="text-[9px] font-mono text-gray-700">
-            Powered by Claude
-          </span>
+          <a href="https://olfactal.com" target="_blank" rel="noopener noreferrer" className="text-[9px] font-mono text-gray-700 hover:text-scent-accent transition-colors">
+            Powered by olfactal.com
+          </a>
         </div>
       </div>
     </WidgetWrapper>
