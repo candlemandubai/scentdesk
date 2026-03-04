@@ -14,6 +14,8 @@ export interface BriefInsight {
   category: string;
   headline: string;
   detail: string;
+  sourceUrl?: string;
+  source?: string;
 }
 
 export interface DailyBrief {
@@ -49,14 +51,11 @@ export async function POST(request: Request) {
 
   try {
     // 1. Fetch the latest news from our own RSS endpoint
-    const baseUrl =
-      process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : "http://localhost:3000";
+    const baseUrl = "https://www.scentdesk.app";
 
     const [newsRes, regRes] = await Promise.allSettled([
-      fetch(`${baseUrl}/api/news`).then((r) => r.json()),
-      fetch(`${baseUrl}/api/regulatory`).then((r) => r.json()),
+      fetch(`${baseUrl}/api/news`, { cache: "no-store" }).then((r) => r.json()),
+      fetch(`${baseUrl}/api/regulatory`, { cache: "no-store" }).then((r) => r.json()),
     ]);
 
     const newsData =
@@ -67,27 +66,33 @@ export async function POST(request: Request) {
     const totalItems = newsData.length + regData.length;
 
     if (totalItems === 0) {
-      // Nothing to analyze — keep existing brief or save fallback
       return NextResponse.json({
         status: "skipped",
         reason: "No news items available",
+        debug: {
+          baseUrl,
+          newsStatus: newsRes.status,
+          regStatus: regRes.status,
+          newsError: newsRes.status === "rejected" ? String(newsRes.reason) : null,
+          regError: regRes.status === "rejected" ? String(regRes.reason) : null,
+        },
       });
     }
 
-    // 2. Build a condensed prompt of headlines for Claude
+    // 2. Build a condensed prompt of headlines for Claude (including URLs for source attribution)
     const headlines = newsData
       .slice(0, 30)
       .map(
-        (n: { title: string; source: string; category: string; sentiment?: string }) =>
-          `[${n.category}] ${n.title} (${n.source}) — sentiment: ${n.sentiment || "neutral"}`
+        (n: { title: string; source: string; category: string; sentiment?: string; url?: string }, idx: number) =>
+          `${idx + 1}. [${n.category}] ${n.title} (${n.source}) — sentiment: ${n.sentiment || "neutral"}${n.url ? ` | url: ${n.url}` : ""}`
       )
       .join("\n");
 
     const regHeadlines = regData
       .slice(0, 10)
       .map(
-        (r: { title: string; body: string; severity: string; region: string }) =>
-          `[${r.severity.toUpperCase()}] ${r.title} (${r.body}, ${r.region})`
+        (r: { title: string; body: string; severity: string; region: string; url?: string }, idx: number) =>
+          `${idx + 1}. [${r.severity.toUpperCase()}] ${r.title} (${r.body}, ${r.region})${r.url ? ` | url: ${r.url}` : ""}`
       )
       .join("\n");
 
@@ -96,7 +101,7 @@ export async function POST(request: Request) {
 
     const response = await client.messages.create({
       model: "claude-haiku-4-5",
-      max_tokens: 1024,
+      max_tokens: 2048,
       system: `You are ScentDesk's intelligence analyst for the fragrance industry. Analyze today's news headlines and generate a concise daily brief. You must respond with ONLY valid JSON — no markdown, no code fences, no explanation text.
 
 JSON format:
@@ -107,18 +112,21 @@ JSON format:
       "emoji": "📈",
       "category": "Market",
       "headline": "Short punchy headline (max 60 chars)",
-      "detail": "1-2 sentence explanation with key facts (max 180 chars)"
+      "detail": "1-2 sentence explanation with key facts (max 180 chars)",
+      "sourceUrl": "https://example.com/article-url",
+      "source": "Source Name"
     }
   ]
 }
 
 Rules:
 - Generate exactly 4-5 insights covering different categories
-- Categories to consider: Market, M&A, Regulatory, Supply Chain, Launches, Raw Materials
-- Use appropriate emoji for each category: 📈 Market, 🤝 M&A, ⚖️ Regulatory, 🔗 Supply Chain, 🚀 Launches, 🧪 Raw Materials
+- Categories to consider: Market, Deals, Regulatory, Supply Chain, Launches, Ingredients
+- Use appropriate emoji for each category: 📈 Market, 🤝 Deals, ⚖️ Regulatory, 🔗 Supply Chain, 🚀 Launches, 🧪 Ingredients
 - Focus on what matters to perfumers and fragrance business professionals
 - Be concise and data-driven — no fluff
-- If regulatory items have high severity, prioritize them`,
+- If regulatory items have high severity, prioritize them
+- For each insight, include the "sourceUrl" and "source" from the MOST relevant headline that inspired it. Use the exact url provided in the headline data. If no url is available, omit the sourceUrl field.`,
       messages: [
         {
           role: "user",
@@ -135,20 +143,34 @@ Generate the daily intelligence brief as JSON.`,
       ],
     });
 
-    // 4. Parse Claude's response
+    // 4. Parse Claude's response (with robust JSON extraction)
     const textBlock = response.content.find((b) => b.type === "text");
     const rawText = textBlock?.text || "";
 
     let parsed: { summary: string; insights: BriefInsight[] };
+
+    // Clean the text: remove code fences, trailing commas, control characters
+    const cleanJson = (text: string): string => {
+      return text
+        .replace(/```json\s*/g, "")
+        .replace(/```\s*/g, "")
+        .replace(/,\s*([\]}])/g, "$1")  // Remove trailing commas before ] or }
+        .trim();
+    };
+
     try {
-      parsed = JSON.parse(rawText);
+      parsed = JSON.parse(cleanJson(rawText));
     } catch {
-      // Try extracting JSON from possible markdown code fence
+      // Try extracting JSON object from the text
       const jsonMatch = rawText.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
-        parsed = JSON.parse(jsonMatch[0]);
+        try {
+          parsed = JSON.parse(cleanJson(jsonMatch[0]));
+        } catch {
+          throw new Error(`Failed to parse Claude response as JSON: ${rawText.slice(0, 200)}`);
+        }
       } else {
-        throw new Error("Failed to parse Claude response as JSON");
+        throw new Error("No JSON found in Claude response");
       }
     }
 

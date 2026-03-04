@@ -2,6 +2,53 @@
 import { create } from "zustand";
 import type { AnalyticsEvent } from "@/types";
 
+/** Detect where the visitor came from */
+function detectTrafficSource(): string {
+  if (typeof window === "undefined") return "unknown";
+
+  // Check UTM first
+  const params = new URLSearchParams(window.location.search);
+  const utm = params.get("utm_source");
+  if (utm) return utm;
+
+  const ref = document.referrer;
+  if (!ref) return "direct";
+
+  try {
+    const hostname = new URL(ref).hostname.replace("www.", "");
+    // Map known domains to readable names
+    const knownSources: Record<string, string> = {
+      "google.com": "google",
+      "google.ae": "google",
+      "google.co.uk": "google",
+      "bing.com": "bing",
+      "duckduckgo.com": "duckduckgo",
+      "yahoo.com": "yahoo",
+      "t.co": "twitter",
+      "x.com": "twitter",
+      "instagram.com": "instagram",
+      "l.instagram.com": "instagram",
+      "facebook.com": "facebook",
+      "l.facebook.com": "facebook",
+      "linkedin.com": "linkedin",
+      "reddit.com": "reddit",
+      "tiktok.com": "tiktok",
+      "youtube.com": "youtube",
+      "pinterest.com": "pinterest",
+      "threads.net": "threads",
+      "whatsapp.com": "whatsapp",
+      "telegram.org": "telegram",
+      "fragrantica.com": "fragrantica",
+      "basenotes.com": "basenotes",
+      "olfactal.com": "olfactal",
+      "candlestart.com": "candlestart",
+    };
+    return knownSources[hostname] || hostname;
+  } catch {
+    return "referral";
+  }
+}
+
 interface AnalyticsState {
   events: AnalyticsEvent[];
   sessionStart: number;
@@ -9,6 +56,8 @@ interface AnalyticsState {
   totalPageViews: number;
   widgetInteractions: Record<string, number>;
   tabViews: Record<string, number>;
+  trafficSources: Record<string, number>;
+  currentSource: string;
   trackEvent: (event: AnalyticsEvent) => void;
   getSessionDuration: () => number;
   getTopWidgets: () => { widget: string; count: number }[];
@@ -21,6 +70,8 @@ export const useAnalyticsStore = create<AnalyticsState>()((set, get) => ({
   totalPageViews: 0,
   widgetInteractions: {},
   tabViews: {},
+  trafficSources: {},
+  currentSource: "unknown",
   trackEvent: (event) =>
     set((s) => {
       const newState: Partial<AnalyticsState> = {
@@ -35,6 +86,13 @@ export const useAnalyticsStore = create<AnalyticsState>()((set, get) => ({
       }
       if (event.type === "page_view") {
         newState.totalPageViews = s.totalPageViews + 1;
+        // Track traffic source on page view
+        const source = detectTrafficSource();
+        newState.currentSource = source;
+        newState.trafficSources = {
+          ...s.trafficSources,
+          [source]: (s.trafficSources[source] || 0) + 1,
+        };
       }
       if (event.type === "tab_change" && event.tab) {
         newState.tabViews = {

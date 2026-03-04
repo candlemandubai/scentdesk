@@ -25,7 +25,11 @@ import {
   Lock,
   LogOut,
   ShieldCheck,
+  Users,
+  Globe,
+  Mail,
 } from "lucide-react";
+import { useViewCounter } from "@/hooks/useViewCounter";
 
 const categoryIcons: Record<string, React.ReactNode> = {
   widgets: <Layout size={16} />,
@@ -175,9 +179,26 @@ export default function AdminPage() {
 function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const { features, toggleFeature, toggleSubFeature, enableAll, disableAll, resetDefaults } = useAdminStore();
   const { resetLayout, widgets } = useDashboardStore();
-  const { totalClicks, totalPageViews, getSessionDuration, widgetInteractions, tabViews, events } = useAnalyticsStore();
+  const { totalClicks, totalPageViews, getSessionDuration, widgetInteractions, tabViews, events, trafficSources } = useAnalyticsStore();
+  const { totalViews, liveViewers } = useViewCounter();
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(["widgets", "features"]));
   const [activeSection, setActiveSection] = useState<"toggles" | "analytics" | "layout">("toggles");
+  const [subscribers, setSubscribers] = useState<{ email: string; subscribedAt: string; source: string }[]>([]);
+  const [subscriberCount, setSubscriberCount] = useState(0);
+
+  // Fetch subscribers list
+  useEffect(() => {
+    const token = sessionStorage.getItem("admin_token");
+    if (token) {
+      fetch("/api/newsletter", { headers: { Authorization: `Bearer ${token}` } })
+        .then((r) => r.json())
+        .then((d) => {
+          if (d.subscribers) setSubscribers(d.subscribers);
+          if (d.count !== undefined) setSubscriberCount(d.count);
+        })
+        .catch(() => {});
+    }
+  }, []);
 
   const toggleExpand = (id: string) => {
     setExpandedCategories((prev) => {
@@ -358,35 +379,55 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
         {/* Analytics */}
         {activeSection === "analytics" && (
           <div className="space-y-6">
-            {/* Summary cards */}
-            <div className="grid grid-cols-4 gap-4">
+            {/* Summary cards — row 1 */}
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+              <div className="bg-scent-surface border border-scent-border rounded-lg p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Globe size={14} className="text-scent-accent" />
+                  <span className="text-[10px] font-mono text-gray-500 uppercase">Total Views</span>
+                </div>
+                <div className="text-2xl font-mono font-bold text-white">{totalViews?.toLocaleString() ?? "—"}</div>
+                <div className="text-[9px] font-mono text-gray-600 mt-1">All time (persistent)</div>
+              </div>
+              <div className="bg-scent-surface border border-scent-border rounded-lg p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Users size={14} className="text-emerald-400" />
+                  <span className="text-[10px] font-mono text-gray-500 uppercase">Live Now</span>
+                </div>
+                <div className="text-2xl font-mono font-bold text-emerald-400">{liveViewers}</div>
+                <div className="text-[9px] font-mono text-gray-600 mt-1">Current viewers</div>
+              </div>
               <div className="bg-scent-surface border border-scent-border rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Eye size={14} className="text-blue-400" />
-                  <span className="text-[10px] font-mono text-gray-500 uppercase">Page Views</span>
+                  <span className="text-[10px] font-mono text-gray-500 uppercase">Session Views</span>
                 </div>
                 <div className="text-2xl font-mono font-bold text-white">{totalPageViews}</div>
+                <div className="text-[9px] font-mono text-gray-600 mt-1">This session</div>
               </div>
               <div className="bg-scent-surface border border-scent-border rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <MousePointer size={14} className="text-emerald-400" />
-                  <span className="text-[10px] font-mono text-gray-500 uppercase">Total Clicks</span>
+                  <MousePointer size={14} className="text-amber-400" />
+                  <span className="text-[10px] font-mono text-gray-500 uppercase">Clicks</span>
                 </div>
                 <div className="text-2xl font-mono font-bold text-white">{totalClicks}</div>
+                <div className="text-[9px] font-mono text-gray-600 mt-1">This session</div>
               </div>
               <div className="bg-scent-surface border border-scent-border rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <Clock size={14} className="text-amber-400" />
-                  <span className="text-[10px] font-mono text-gray-500 uppercase">Session Time</span>
+                  <Clock size={14} className="text-purple-400" />
+                  <span className="text-[10px] font-mono text-gray-500 uppercase">Session</span>
                 </div>
                 <div className="text-2xl font-mono font-bold text-white">{formatDuration(getSessionDuration())}</div>
+                <div className="text-[9px] font-mono text-gray-600 mt-1">Duration</div>
               </div>
               <div className="bg-scent-surface border border-scent-border rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <Activity size={14} className="text-purple-400" />
-                  <span className="text-[10px] font-mono text-gray-500 uppercase">Total Events</span>
+                  <Mail size={14} className="text-pink-400" />
+                  <span className="text-[10px] font-mono text-gray-500 uppercase">Subscribers</span>
                 </div>
-                <div className="text-2xl font-mono font-bold text-white">{events.length}</div>
+                <div className="text-2xl font-mono font-bold text-white">{subscriberCount}</div>
+                <div className="text-[9px] font-mono text-gray-600 mt-1">Olfactal signups</div>
               </div>
             </div>
 
@@ -432,29 +473,88 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
               )}
             </div>
 
-            {/* Recent events */}
-            <div className="bg-scent-surface border border-scent-border rounded-lg p-4">
-              <div className="text-[11px] font-mono text-gray-500 uppercase tracking-wider mb-3">Recent Events</div>
-              <div className="space-y-1 max-h-64 overflow-y-auto">
-                {events.slice(-20).reverse().map((event, i) => (
-                  <div key={i} className="flex items-center gap-3 py-1 text-[11px] font-mono">
-                    <span className="text-gray-600">{new Date(event.timestamp).toLocaleTimeString()}</span>
-                    <span className={`badge ${
-                      event.type === "page_view" ? "badge-blue" :
-                      event.type === "widget_click" ? "badge-green" :
-                      event.type === "tab_change" ? "badge-gold" :
-                      "badge-purple"
-                    }`}>
-                      {event.type}
-                    </span>
-                    {event.widget && <span className="text-gray-400">{event.widget}</span>}
-                    {event.tab && <span className="text-gray-400">{event.tab}</span>}
+            {/* Traffic Sources + Recent Events side by side */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Traffic Sources */}
+              <div className="bg-scent-surface border border-scent-border rounded-lg p-4">
+                <div className="text-[11px] font-mono text-gray-500 uppercase tracking-wider mb-3">Traffic Sources</div>
+                {Object.keys(trafficSources).length > 0 ? (
+                  <div className="space-y-2">
+                    {Object.entries(trafficSources)
+                      .sort(([, a], [, b]) => b - a)
+                      .map(([source, count]) => {
+                        const total = Object.values(trafficSources).reduce((a, b) => a + b, 0);
+                        const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+                        return (
+                          <div key={source} className="flex items-center gap-3">
+                            <span className="text-[12px] text-gray-300 w-24 truncate capitalize">{source}</span>
+                            <div className="flex-1 h-1.5 bg-scent-bg rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-scent-accent rounded-full transition-all"
+                                style={{ width: `${pct}%` }}
+                              />
+                            </div>
+                            <span className="text-[11px] font-mono text-gray-500 w-8 text-right">{pct}%</span>
+                            <span className="text-[11px] font-mono text-white w-6 text-right">{count}</span>
+                          </div>
+                        );
+                      })}
                   </div>
-                ))}
-                {events.length === 0 && (
-                  <p className="text-[12px] text-gray-600">No events recorded yet.</p>
+                ) : (
+                  <p className="text-[12px] text-gray-600">No traffic data yet. Sources are detected on page view.</p>
                 )}
               </div>
+
+              {/* Recent Events */}
+              <div className="bg-scent-surface border border-scent-border rounded-lg p-4">
+                <div className="text-[11px] font-mono text-gray-500 uppercase tracking-wider mb-3">Recent Events</div>
+                <div className="space-y-1 max-h-64 overflow-y-auto">
+                  {events.slice(-20).reverse().map((event, i) => (
+                    <div key={i} className="flex items-center gap-3 py-1 text-[11px] font-mono">
+                      <span className="text-gray-600">{new Date(event.timestamp).toLocaleTimeString()}</span>
+                      <span className={`badge ${
+                        event.type === "page_view" ? "badge-blue" :
+                        event.type === "widget_click" ? "badge-green" :
+                        event.type === "tab_change" ? "badge-gold" :
+                        "badge-purple"
+                      }`}>
+                        {event.type}
+                      </span>
+                      {event.widget && <span className="text-gray-400">{event.widget}</span>}
+                      {event.tab && <span className="text-gray-400">{event.tab}</span>}
+                    </div>
+                  ))}
+                  {events.length === 0 && (
+                    <p className="text-[12px] text-gray-600">No events recorded yet.</p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Olfactal Subscribers */}
+            <div className="bg-scent-surface border border-scent-border rounded-lg p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="text-[11px] font-mono text-gray-500 uppercase tracking-wider">Olfactal Beta Signups</div>
+                <span className="text-[10px] font-mono text-scent-accent">{subscriberCount} total</span>
+              </div>
+              {subscribers.length > 0 ? (
+                <div className="space-y-1 max-h-48 overflow-y-auto">
+                  <div className="grid grid-cols-[1fr_140px_80px] gap-2 text-[9px] font-mono text-gray-600 uppercase tracking-wider pb-2 border-b border-scent-border">
+                    <span>Email</span>
+                    <span>Date</span>
+                    <span>Source</span>
+                  </div>
+                  {subscribers.map((sub, i) => (
+                    <div key={i} className="grid grid-cols-[1fr_140px_80px] gap-2 py-1.5 items-center hover:bg-white/[0.02] rounded">
+                      <span className="text-[12px] text-gray-300 truncate">{sub.email}</span>
+                      <span className="text-[10px] font-mono text-gray-500">{new Date(sub.subscribedAt).toLocaleDateString()}</span>
+                      <span className="badge badge-blue">{sub.source}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-[12px] text-gray-600">No signups yet. Enable the Olfactal Beta widget to start collecting emails.</p>
+              )}
             </div>
           </div>
         )}
