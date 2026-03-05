@@ -12,9 +12,9 @@ Real-time market data, regulatory updates, raw material tracking, new launches, 
 
 If you're here, you're probably a developer, a fragrance nerd, or both. Either way, welcome.
 
-We built ScentDesk because the fragrance industry — a $125B+ market — doesn't have a central, open place to track what's happening. Market data is scattered across expensive reports. Regulatory changes get buried. Job postings are all over the place. We wanted to fix that.
+We built ScentDesk because we love this industry and wanted a single dashboard to stay on top of everything — market moves, regulatory changes, new launches, ingredient trends, and career opportunities. The fragrance world is a $125B+ ecosystem with so much happening every day, and we thought it deserved a dedicated intelligence tool.
 
-This project is open source because we believe the fragrance community deserves transparency. We're not hiding behind paywalls or gatekeeping information. The more people who have access to good data, the better the industry gets.
+This project is open source because we believe in building together. The fragrance community has always been generous with knowledge, and ScentDesk is our way of contributing back. The more people using and improving it, the better it gets for everyone.
 
 ### What ScentDesk tracks
 
