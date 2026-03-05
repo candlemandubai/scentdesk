@@ -22,8 +22,7 @@ const RSS_FEEDS: FeedSource[] = [
   { url: "https://www.cosmeticsdesign-europe.com/var/plain_site/storage/rss/news.rss", source: "Cosmetics Design EU", category: "Regulatory" },
   { url: "https://www.globalcosmeticsnews.com/feed/", source: "Global Cosmetics News", category: "Market" },
   { url: "https://www.premiumbeautynews.com/en/?format=feed&type=rss", source: "Premium Beauty News", category: "Launches" },
-  // Business/market feeds that cover fragrance/luxury
-  { url: "https://www.businessoffashion.com/feed", source: "Business of Fashion", category: "Market" },
+  // Business/market feeds — beauty-specific only (no general fashion)
   { url: "https://www.businessoffashion.com/feed/beauty", source: "BoF Beauty", category: "Industry" },
   { url: "https://wwd.com/beauty-industry-news/feed/", source: "WWD Beauty", category: "Industry" },
   { url: "https://feeds.feedburner.com/beautypackaging/dOWj", source: "Beauty Packaging", category: "Supply Chain" },
@@ -32,13 +31,13 @@ const RSS_FEEDS: FeedSource[] = [
   { url: "https://news.google.com/rss/search?q=IFRA+OR+fragrance+regulation+OR+cosmetics+regulation+OR+CTPA+OR+CLP+cosmetics&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Regulatory" },
   { url: "https://news.google.com/rss/search?q=Givaudan+OR+IFF+OR+Firmenich+OR+Symrise+fragrance&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "M&A" },
   { url: "https://news.google.com/rss/search?q=new+perfume+launch+2026+OR+fragrance+launch&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Launches" },
-  { url: "https://news.google.com/rss/search?q=essential+oils+price+OR+raw+materials+fragrance+OR+vanilla+price+OR+sandalwood+price+OR+oud+oil+price&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Raw Materials" },
-  { url: "https://news.google.com/rss/search?q=sandalwood+harvest+OR+vetiver+oil+OR+patchouli+oil+OR+rose+oil+Bulgaria+OR+fragrance+ingredient+shortage+OR+aroma+chemicals&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Raw Materials" },
+  { url: "https://news.google.com/rss/search?q=%22essential+oils%22+price+fragrance+-crude+-petroleum+-OPEC+-gasoline&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Raw Materials" },
+  { url: "https://news.google.com/rss/search?q=vanilla+price+OR+sandalwood+price+OR+%22oud+oil%22+price+-crude+-petroleum&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Raw Materials" },
+  { url: "https://news.google.com/rss/search?q=sandalwood+harvest+OR+vetiver+oil+fragrance+OR+patchouli+oil+OR+%22rose+oil%22+Bulgaria+OR+%22aroma+chemicals%22&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Raw Materials" },
   { url: "https://news.google.com/rss/search?q=vanilla+Madagascar+harvest+OR+lavender+Provence+OR+bergamot+Calabria+OR+jasmine+Grasse+OR+ylang+ylang+OR+tonka+bean&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Raw Materials" },
-  { url: "https://news.google.com/rss/search?q=synthetic+fragrance+ingredient+OR+lab+grown+musk+OR+sustainable+sourcing+perfume+OR+fragrance+supply+chain+disruption&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Raw Materials" },
-  { url: "https://news.google.com/rss/search?q=aroma+chemicals+market+OR+fragrance+raw+material+cost+OR+natural+ingredient+perfume+supply&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Raw Materials" },
-  { url: "https://news.google.com/rss/search?q=essential+oil+export+OR+citrus+oil+price+OR+clove+oil+OR+eucalyptus+oil+market+OR+mint+oil+price&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Raw Materials" },
-  { url: "https://news.google.com/rss/search?q=%22fragrance+ingredient%22+OR+%22perfume+ingredient%22+OR+%22cosmetic+raw+material%22+supply+chain&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Raw Materials" },
+  { url: "https://news.google.com/rss/search?q=%22synthetic+fragrance%22+ingredient+OR+%22lab+grown+musk%22+OR+%22sustainable+sourcing%22+perfume&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Raw Materials" },
+  { url: "https://news.google.com/rss/search?q=%22aroma+chemicals%22+market+OR+%22fragrance+raw+material%22+OR+%22natural+ingredient%22+perfume&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Raw Materials" },
+  { url: "https://news.google.com/rss/search?q=%22fragrance+ingredient%22+OR+%22perfume+ingredient%22+OR+%22cosmetic+raw+material%22&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Raw Materials" },
   // Home fragrance — candles, diffusers, room sprays
   { url: "https://news.google.com/rss/search?q=scented+candle+market+OR+candle+industry+OR+luxury+candles+brand&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Home Fragrance" },
   { url: "https://news.google.com/rss/search?q=reed+diffuser+market+OR+room+spray+market+OR+home+fragrance+industry&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Home Fragrance" },
@@ -83,6 +82,28 @@ function guessSentiment(title: string): "positive" | "negative" | "neutral" {
  * when article title clearly matches a different topic.
  * Only overrides for non-Google News feeds (Google feeds are already topic-specific).
  */
+/**
+ * Reject articles that are clearly off-topic for a fragrance industry terminal.
+ * Returns true if the article should be EXCLUDED.
+ */
+function isIrrelevant(title: string): boolean {
+  const t = title.toLowerCase();
+  // Crude oil, energy, geopolitics — NOT fragrance raw materials
+  if (/\b(crude oil|petroleum|gasoline|opec|brent|barrel|refinery|natural gas|lng|shale|fracking|oil rig|oil field|oil well)\b/.test(t)) return true;
+  // War, sanctions, general geopolitics (unless fragrance-related)
+  if (/\b(war in iran|shadow fleet|sanctions.*oil|venezuela.*oil|ecuador.*oil|russia.*oil|military|troops|missile|weapons)\b/.test(t)) return true;
+  // General fashion with no fragrance/beauty angle
+  if (/\b(fashion startup|fashion week|runway show|streetwear|sneaker|handbag|denim)\b/.test(t)
+      && !/\b(fragrance|perfume|beauty|scent|cosmetic)\b/.test(t)) return true;
+  // Generic consumer products unrelated to fragrance
+  if (/\b(deodorant|toothpaste|shampoo|dishwash|laundry detergent|cleaning product)\b/.test(t)
+      && !/\b(fragrance|scent|perfume)\b/.test(t)) return true;
+  // Cooking/food oils (not fragrance)
+  if (/\b(olive oil|cooking oil|palm oil|soybean oil|sunflower oil|canola oil|vegetable oil)\b/.test(t)
+      && !/\b(fragrance|perfume|essential oil|aroma)\b/.test(t)) return true;
+  return false;
+}
+
 function smartCategory(title: string, defaultCategory: string, isGoogleNews: boolean): string {
   const t = title.toLowerCase();
 
@@ -190,6 +211,7 @@ export async function GET(request: Request) {
     const allNews = (results as any[])
       .filter((r) => r.status === "fulfilled")
       .flatMap((r) => r.value)
+      .filter((item: { title: string }) => !isIrrelevant(item.title))
       .sort((a: { pubDate: string }, b: { pubDate: string }) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime())
       .slice(0, 50);
 
