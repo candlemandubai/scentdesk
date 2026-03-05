@@ -34,6 +34,8 @@ const RSS_FEEDS: FeedSource[] = [
   { url: "https://news.google.com/rss/search?q=new+perfume+launch+2026+OR+fragrance+launch&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Launches" },
   { url: "https://news.google.com/rss/search?q=essential+oils+price+OR+raw+materials+fragrance+OR+vanilla+price+OR+sandalwood+price+OR+oud+oil+price&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Raw Materials" },
   { url: "https://news.google.com/rss/search?q=sandalwood+harvest+OR+vetiver+oil+OR+patchouli+oil+OR+rose+oil+Bulgaria+OR+fragrance+ingredient+shortage+OR+aroma+chemicals&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Raw Materials" },
+  { url: "https://news.google.com/rss/search?q=vanilla+Madagascar+harvest+OR+lavender+Provence+OR+bergamot+Calabria+OR+jasmine+Grasse+OR+ylang+ylang+OR+tonka+bean&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Raw Materials" },
+  { url: "https://news.google.com/rss/search?q=synthetic+fragrance+ingredient+OR+lab+grown+musk+OR+sustainable+sourcing+perfume+OR+fragrance+supply+chain+disruption&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Raw Materials" },
   // Home fragrance — candles, diffusers, room sprays
   { url: "https://news.google.com/rss/search?q=scented+candle+market+OR+candle+industry+OR+luxury+candles+brand&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Home Fragrance" },
   { url: "https://news.google.com/rss/search?q=reed+diffuser+market+OR+room+spray+market+OR+home+fragrance+industry&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Home Fragrance" },
@@ -81,7 +83,7 @@ function smartCategory(title: string, defaultCategory: string, isGoogleNews: boo
   // For Google News: only override when a specific-ingredient keyword is found
   // but the article landed in a generic feed (e.g. "sandalwood" in Market feed)
   if (isGoogleNews) {
-    if (/\b(sandalwood|vetiver|oud|patchouli|vanilla|rose oil|musk|amber|essential oil|harvest|shortage|crop|distill|aroma chemical)\b/.test(t)
+    if (/\b(sandalwood|vetiver|oud|patchouli|vanilla|rose oil|musk|amber|essential oil|harvest|shortage|crop|distill|aroma chemical|jasmine|ylang|bergamot|lavender|tonka|frankincense|myrrh|cedar|synthetic musk|lab.grown|sourcing)\b/.test(t)
         && defaultCategory !== "Raw Materials") {
       return "Raw Materials";
     }
@@ -97,7 +99,7 @@ function smartCategory(title: string, defaultCategory: string, isGoogleNews: boo
     return "Regulatory";
 
   // Raw Materials / Supply Chain
-  if (/\b(raw material|essential oil|ingredient|vanilla|sandalwood|vetiver|oud|musk|amber|patchouli|rose oil|supply chain|shortage|pricing|sourcing|harvest|crop|distill)\b/.test(t))
+  if (/\b(raw material|essential oil|ingredient|vanilla|sandalwood|vetiver|oud|musk|amber|patchouli|rose oil|supply chain|shortage|pricing|sourcing|harvest|crop|distill|jasmine|ylang|bergamot|lavender|tonka|frankincense|myrrh|cedar|aroma chemical|synthetic musk|lab.grown|sustainable sourcing)\b/.test(t))
     return "Raw Materials";
 
   // Launches — new products, collections
