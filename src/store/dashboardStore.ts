@@ -64,7 +64,7 @@ export const useDashboardStore = create<DashboardState>()(
     }),
     {
       name: "scent-desk-v2",
-      version: 8,
+      version: 9,
       migrate: (persisted: unknown, version: number) => {
         const state = persisted as DashboardState;
         if (version < 8) {
@@ -74,12 +74,11 @@ export const useDashboardStore = create<DashboardState>()(
             ...dw,
             enabled: enabledMap.has(dw.id) ? enabledMap.get(dw.id)! : dw.enabled,
           }));
-          // Add any user widgets not in defaults (shouldn't happen, but just in case)
           const defaultIds = new Set(defaultWidgets.map((w) => w.id));
           const extras = state.widgets.filter((w) => !defaultIds.has(w.id));
           return { ...state, widgets: [...merged, ...extras] };
         }
-        // Always merge new defaults for any version
+        // v8 → v9: add community-feed widget for existing users
         const existingIds = new Set(state.widgets.map((w) => w.id));
         const newWidgets = defaultWidgets.filter((w) => !existingIds.has(w.id));
         if (newWidgets.length > 0) {
