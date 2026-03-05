@@ -14,6 +14,7 @@ import {
   Headphones,
   Globe2,
   Command,
+  ExternalLink,
 } from "lucide-react";
 
 interface CommandItem {
@@ -21,9 +22,19 @@ interface CommandItem {
   label: string;
   description: string;
   icon: React.ReactNode;
-  category: "navigate" | "command" | "widget" | "data";
+  category: "navigate" | "command" | "widget" | "data" | "article";
   shortcut?: string;
   action: () => void;
+  url?: string;
+}
+
+interface NewsArticle {
+  id: string;
+  title: string;
+  source: string;
+  category: string;
+  url: string;
+  timestamp: string;
 }
 
 interface CommandPaletteProps {
@@ -33,6 +44,7 @@ interface CommandPaletteProps {
 export default function CommandPalette({ onClose }: CommandPaletteProps) {
   const [query, setQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [articles, setArticles] = useState<NewsArticle[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const setActiveTab = useDashboardStore((s) => s.setActiveTab);
@@ -41,6 +53,16 @@ export default function CommandPalette({ onClose }: CommandPaletteProps) {
   // Focus input on mount
   useEffect(() => {
     inputRef.current?.focus();
+  }, []);
+
+  // Fetch articles once for search
+  useEffect(() => {
+    fetch("/api/news")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.news) setArticles(data.news);
+      })
+      .catch(() => {});
   }, []);
 
   // Escape to close
@@ -100,7 +122,7 @@ export default function CommandPalette({ onClose }: CommandPaletteProps) {
       {
         id: "w-news",
         label: "Industry News",
-        description: "Real-time RSS news from 12+ sources",
+        description: "Real-time RSS news from 16+ sources",
         icon: <Newspaper size={16} />,
         category: "widget",
         action: () => {
@@ -183,52 +205,46 @@ export default function CommandPalette({ onClose }: CommandPaletteProps) {
           onClose();
         },
       },
-      // Data search
-      {
-        id: "search-ifra",
-        label: "Search: IFRA Regulations",
-        description: "Search for IFRA standards and amendments",
-        icon: <Search size={16} />,
-        category: "data",
-        action: () => { setSearchQuery("IFRA"); onClose(); },
-      },
-      {
-        id: "search-givaudan",
-        label: "Search: Givaudan",
-        description: "Search for Givaudan across all data",
-        icon: <Search size={16} />,
-        category: "data",
-        action: () => { setSearchQuery("Givaudan"); onClose(); },
-      },
-      {
-        id: "search-iff",
-        label: "Search: IFF",
-        description: "Search for IFF across all data",
-        icon: <Search size={16} />,
-        category: "data",
-        action: () => { setSearchQuery("IFF"); onClose(); },
-      },
-      {
-        id: "search-firmenich",
-        label: "Search: dsm-firmenich",
-        description: "Search for dsm-firmenich across all data",
-        icon: <Search size={16} />,
-        category: "data",
-        action: () => { setSearchQuery("firmenich"); onClose(); },
-      },
     ],
     [setActiveTab, setSearchQuery, onClose]
   );
 
+  // Search through commands + live articles
   const filtered = useMemo(() => {
     if (!query.trim()) return commands;
     const q = query.toLowerCase();
-    return commands.filter(
+
+    // Filter commands
+    const matchedCommands = commands.filter(
       (c) =>
         c.label.toLowerCase().includes(q) ||
         c.description.toLowerCase().includes(q)
     );
-  }, [commands, query]);
+
+    // Search live articles (only when there's a query)
+    const matchedArticles: CommandItem[] = articles
+      .filter(
+        (a) =>
+          a.title.toLowerCase().includes(q) ||
+          a.source.toLowerCase().includes(q) ||
+          a.category.toLowerCase().includes(q)
+      )
+      .slice(0, 8)
+      .map((a) => ({
+        id: `article-${a.id}`,
+        label: a.title,
+        description: `${a.source} · ${a.timestamp}`,
+        icon: <ExternalLink size={16} />,
+        category: "article" as const,
+        url: a.url,
+        action: () => {
+          window.open(a.url, "_blank", "noopener,noreferrer");
+          onClose();
+        },
+      }));
+
+    return [...matchedCommands, ...matchedArticles];
+  }, [commands, articles, query, onClose]);
 
   // Reset selection when filter changes
   useEffect(() => {
@@ -274,6 +290,7 @@ export default function CommandPalette({ onClose }: CommandPaletteProps) {
     command: "COMMANDS",
     widget: "WIDGETS",
     data: "SEARCH DATA",
+    article: "ARTICLES",
   };
 
   let flatIndex = -1;
@@ -289,7 +306,7 @@ export default function CommandPalette({ onClose }: CommandPaletteProps) {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search or type a command..."
+            placeholder="Search articles, widgets, commands..."
             className="flex-1 bg-transparent text-[14px] font-mono text-white placeholder-gray-500 outline-none"
           />
           <kbd className="text-[10px] font-mono text-gray-500 bg-scent-bg px-2 py-1 rounded border border-scent-border">
@@ -302,13 +319,16 @@ export default function CommandPalette({ onClose }: CommandPaletteProps) {
           {filtered.length === 0 ? (
             <div className="px-4 py-8 text-center">
               <p className="text-[13px] text-gray-500 font-mono">No results for &quot;{query}&quot;</p>
-              <p className="text-[11px] text-gray-600 mt-1">Try searching for widgets or commands</p>
+              <p className="text-[11px] text-gray-600 mt-1">Try searching for articles, widgets or commands</p>
             </div>
           ) : (
             Object.entries(grouped).map(([category, items]) => (
               <div key={category}>
                 <div className="px-4 py-1.5 text-[10px] font-mono text-gray-600 uppercase tracking-widest">
                   {categoryLabels[category] || category}
+                  {category === "article" && (
+                    <span className="ml-1.5 text-gray-700">({items.length})</span>
+                  )}
                 </div>
                 {items.map((item) => {
                   flatIndex++;
@@ -328,7 +348,7 @@ export default function CommandPalette({ onClose }: CommandPaletteProps) {
                         {item.icon}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className={`text-[13px] font-mono ${selectedIndex === idx ? "text-white" : "text-gray-300"}`}>
+                        <p className={`text-[13px] font-mono leading-tight ${selectedIndex === idx ? "text-white" : "text-gray-300"}`}>
                           {item.label}
                         </p>
                         <p className="text-[10px] text-gray-600 truncate">{item.description}</p>
@@ -337,6 +357,9 @@ export default function CommandPalette({ onClose }: CommandPaletteProps) {
                         <kbd className="text-[9px] font-mono text-gray-600 bg-scent-bg px-1.5 py-0.5 rounded border border-scent-border shrink-0">
                           {item.shortcut}
                         </kbd>
+                      )}
+                      {item.url && (
+                        <ExternalLink size={10} className="text-gray-600 shrink-0" />
                       )}
                     </button>
                   );

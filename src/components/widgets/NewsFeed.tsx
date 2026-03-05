@@ -72,7 +72,7 @@ function NewsFeedBase({ title, categories, info }: NewsFeedBaseProps) {
               value={selectedDate}
               max={today}
               onChange={(e) => setSelectedDate(e.target.value || today)}
-              className="text-[9px] font-mono bg-transparent border border-scent-border/50 rounded pl-5 pr-1 py-0.5 text-gray-400 hover:border-scent-accent/30 focus:border-scent-accent/50 focus:outline-none cursor-pointer [color-scheme:dark] sm:w-auto w-6 sm:opacity-100"
+              className="text-[9px] font-mono bg-transparent border border-scent-border/50 rounded pl-5 pr-1 py-0.5 text-gray-400 hover:border-scent-accent/30 focus:border-scent-accent/50 focus:outline-none cursor-pointer [color-scheme:dark] w-[90px] sm:w-auto"
             />
           </div>
           <button
@@ -105,10 +105,16 @@ function NewsFeedBase({ title, categories, info }: NewsFeedBaseProps) {
             className="group cursor-pointer block"
           >
             <div className="flex items-start gap-2">
-              <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${
-                item.sentiment === "positive" ? "bg-emerald-400" :
-                item.sentiment === "negative" ? "bg-red-400" : "bg-gray-500"
-              }`} />
+              <span
+                className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${
+                  item.sentiment === "positive" ? "bg-emerald-400" :
+                  item.sentiment === "negative" ? "bg-red-400" : "bg-gray-500"
+                }`}
+                title={
+                  item.sentiment === "positive" ? "Positive sentiment" :
+                  item.sentiment === "negative" ? "Negative sentiment" : "Neutral"
+                }
+              />
               <div className="min-w-0">
                 <p className="text-[13px] text-gray-200 group-hover:text-white leading-tight transition-colors">
                   {item.title}
@@ -146,29 +152,32 @@ export function createNewsFeed(title: string, categories: string[], info: string
   };
 }
 
+// Sentiment legend appended to all widget info tooltips
+const sentimentLegend = " Dot colors: green = positive, red = negative, gray = neutral sentiment.";
+
 // Pre-built category widgets
 export const NewsMarket = createNewsFeed(
   "Market & M&A",
   ["Market", "M&A"],
-  "Market intelligence, mergers & acquisitions in the fragrance industry."
+  "Market intelligence, mergers & acquisitions in the fragrance industry." + sentimentLegend
 );
 
 export const NewsLaunches = createNewsFeed(
   "Launches & Industry",
   ["Launches", "Industry"],
-  "New fragrance launches, brand news, and industry developments."
+  "New fragrance launches, brand news, and industry developments." + sentimentLegend
 );
 
 export const NewsMaterials = createNewsFeed(
   "Raw Materials & Supply",
   ["Raw Materials", "Supply Chain"],
-  "Raw material prices, supply chain updates, and ingredient sourcing news."
+  "Raw material prices, supply chain updates, and ingredient sourcing news." + sentimentLegend
 );
 
 export const NewsHome = createNewsFeed(
   "Home Fragrance",
   ["Home Fragrance"],
-  "Candles, diffusers, room sprays — home fragrance market news."
+  "Candles, diffusers, room sprays — home fragrance market news." + sentimentLegend
 );
 
 // Default export for backwards compat (all categories)
