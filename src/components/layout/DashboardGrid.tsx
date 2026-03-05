@@ -24,6 +24,7 @@ import NewsletterSignup from "@/components/widgets/NewsletterSignup";
 import DailyBrief from "@/components/widgets/DailyBrief";
 import PerfumerSpotlight from "@/components/widgets/PerfumerSpotlight";
 import JobsBoard from "@/components/widgets/JobsBoard";
+import CommunityFeed from "@/components/widgets/CommunityFeed";
 
 const widgetComponents: Record<WidgetType, React.ComponentType> = {
   "news-feed": NewsFeed,
@@ -41,6 +42,7 @@ const widgetComponents: Record<WidgetType, React.ComponentType> = {
   "daily-brief": DailyBrief,
   "perfumer-spotlight": PerfumerSpotlight,
   "jobs-board": JobsBoard,
+  "community-feed": CommunityFeed,
 };
 
 const BREAKPOINTS = { lg: 1200, md: 900, sm: 0 } as const;
