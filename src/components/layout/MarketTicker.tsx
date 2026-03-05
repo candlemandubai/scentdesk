@@ -22,11 +22,18 @@ const STOCK_TICKERS: StockTicker[] = [
   { symbol: "IFF", name: "IFF", exchange: "NYSE", url: "https://www.tradingview.com/symbols/NYSE-IFF/" },
   { symbol: "SY1", name: "Symrise", exchange: "XETR", url: "https://www.tradingview.com/symbols/XETR-SY1/" },
   { symbol: "DSFIR", name: "dsm-firmenich", exchange: "EURONEXT", url: "https://www.tradingview.com/symbols/EURONEXT-DSFIR/" },
+  { symbol: "RBT", name: "Robertet", exchange: "EURONEXT", url: "https://www.tradingview.com/symbols/EURONEXT-RBT/" },
+  { symbol: "CRDA", name: "Croda", exchange: "LSE", url: "https://www.tradingview.com/symbols/LSE-CRDA/" },
   { symbol: "MC", name: "LVMH", exchange: "EURONEXT", url: "https://www.tradingview.com/symbols/EURONEXT-MC/" },
+  { symbol: "KER", name: "Kering", exchange: "EURONEXT", url: "https://www.tradingview.com/symbols/EURONEXT-KER/" },
+  { symbol: "RMS", name: "Hermès", exchange: "EURONEXT", url: "https://www.tradingview.com/symbols/EURONEXT-RMS/" },
+  { symbol: "OR", name: "L'Oréal", exchange: "EURONEXT", url: "https://www.tradingview.com/symbols/EURONEXT-OR/" },
   { symbol: "EL", name: "Estée Lauder", exchange: "NYSE", url: "https://www.tradingview.com/symbols/NYSE-EL/" },
   { symbol: "COTY", name: "Coty", exchange: "NYSE", url: "https://www.tradingview.com/symbols/NYSE-COTY/" },
   { symbol: "IPAR", name: "Inter Parfums", exchange: "NASDAQ", url: "https://www.tradingview.com/symbols/NASDAQ-IPAR/" },
   { symbol: "PUIG", name: "Puig", exchange: "BME", url: "https://www.tradingview.com/symbols/BME-PUIG/" },
+  { symbol: "BBWI", name: "Bath & Body Works", exchange: "NYSE", url: "https://www.tradingview.com/symbols/NYSE-BBWI/" },
+  { symbol: "4911", name: "Shiseido", exchange: "TSE", url: "https://www.tradingview.com/symbols/TSE-4911/" },
 ];
 
 type MixedItem =

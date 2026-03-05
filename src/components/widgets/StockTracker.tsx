@@ -197,6 +197,7 @@ export default function StockTracker() {
   const quotes = data.quotes || [];
   const houses = quotes.filter((q) => q.section === "houses");
   const luxury = quotes.filter((q) => q.section === "luxury");
+  const beauty = quotes.filter((q) => q.section === "beauty");
   const hasLiveData = quotes.some((q) => q.price !== null);
 
   return (
@@ -205,10 +206,10 @@ export default function StockTracker() {
       badge={
         <>
           <LiveBadge />
-          <CountBadge count={quotes.length || 9} />
+          <CountBadge count={quotes.length || 16} />
         </>
       }
-      info="Live stock prices for fragrance & flavor houses (Givaudan, IFF, Symrise, dsm-firmenich) and luxury/consumer brands (LVMH, Estée Lauder, Coty, Inter Parfums, Puig). Data refreshes every 5 minutes. Click any stock for a detailed TradingView chart."
+      info="Live stock prices for 16 fragrance industry stocks: F&F houses (Givaudan, IFF, Symrise, dsm-firmenich, Robertet, Croda), luxury conglomerates (LVMH, Kering, Hermès, L'Oréal), and beauty/consumer brands (Estée Lauder, Coty, Inter Parfums, Puig, Bath & Body Works, Shiseido). Refreshes every 5 minutes."
       headerRight={
         <button
           onClick={refetch}
@@ -261,14 +262,28 @@ export default function StockTracker() {
           </>
         )}
 
-        {/* Section: Luxury & Consumer */}
+        {/* Section: Luxury Conglomerates */}
         {luxury.length > 0 && (
           <>
             <div className="text-[9px] font-mono font-semibold text-gray-500 uppercase tracking-wider mb-0.5 px-2 pt-2">
-              Luxury & Consumer Brands
+              Luxury Conglomerates
             </div>
             <div className="space-y-0">
               {luxury.map((quote) => (
+                <StockRow key={quote.symbol} quote={quote} />
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* Section: Beauty & Consumer */}
+        {beauty.length > 0 && (
+          <>
+            <div className="text-[9px] font-mono font-semibold text-gray-500 uppercase tracking-wider mb-0.5 px-2 pt-2">
+              Beauty & Consumer
+            </div>
+            <div className="space-y-0">
+              {beauty.map((quote) => (
                 <StockRow key={quote.symbol} quote={quote} />
               ))}
             </div>

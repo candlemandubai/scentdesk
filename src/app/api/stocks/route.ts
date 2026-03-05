@@ -5,27 +5,37 @@ interface StockConfig {
   display: string;
   name: string;
   exchange: string;
-  section: "houses" | "luxury";
+  section: "houses" | "luxury" | "beauty";
   tvSymbol: string;
 }
 
 const STOCKS: StockConfig[] = [
+  // Fragrance & Flavor Houses
   { yahoo: "GIVN.SW", display: "GIVN", name: "Givaudan", exchange: "SIX", section: "houses", tvSymbol: "SIX-GIVN" },
   { yahoo: "IFF", display: "IFF", name: "IFF", exchange: "NYSE", section: "houses", tvSymbol: "NYSE-IFF" },
   { yahoo: "SY1.DE", display: "SY1", name: "Symrise", exchange: "XETR", section: "houses", tvSymbol: "XETR-SY1" },
   { yahoo: "DSFIR.AS", display: "DSFIR", name: "dsm-firmenich", exchange: "EURONEXT", section: "houses", tvSymbol: "EURONEXT-DSFIR" },
+  { yahoo: "RBT.PA", display: "RBT", name: "Robertet", exchange: "EURONEXT", section: "houses", tvSymbol: "EURONEXT-RBT" },
+  { yahoo: "CRDA.L", display: "CRDA", name: "Croda International", exchange: "LSE", section: "houses", tvSymbol: "LSE-CRDA" },
+  // Luxury Conglomerates
   { yahoo: "MC.PA", display: "MC", name: "LVMH", exchange: "EURONEXT", section: "luxury", tvSymbol: "EURONEXT-MC" },
-  { yahoo: "EL", display: "EL", name: "Estée Lauder", exchange: "NYSE", section: "luxury", tvSymbol: "NYSE-EL" },
-  { yahoo: "COTY", display: "COTY", name: "Coty", exchange: "NYSE", section: "luxury", tvSymbol: "NYSE-COTY" },
-  { yahoo: "IPAR", display: "IPAR", name: "Inter Parfums", exchange: "NASDAQ", section: "luxury", tvSymbol: "NASDAQ-IPAR" },
-  { yahoo: "PUIG.MC", display: "PUIG", name: "Puig", exchange: "BME", section: "luxury", tvSymbol: "BME-PUIG" },
+  { yahoo: "KER.PA", display: "KER", name: "Kering", exchange: "EURONEXT", section: "luxury", tvSymbol: "EURONEXT-KER" },
+  { yahoo: "RMS.PA", display: "RMS", name: "Hermès", exchange: "EURONEXT", section: "luxury", tvSymbol: "EURONEXT-RMS" },
+  { yahoo: "OR.PA", display: "OR", name: "L'Oréal", exchange: "EURONEXT", section: "luxury", tvSymbol: "EURONEXT-OR" },
+  // Beauty & Consumer
+  { yahoo: "EL", display: "EL", name: "Estée Lauder", exchange: "NYSE", section: "beauty", tvSymbol: "NYSE-EL" },
+  { yahoo: "COTY", display: "COTY", name: "Coty", exchange: "NYSE", section: "beauty", tvSymbol: "NYSE-COTY" },
+  { yahoo: "IPAR", display: "IPAR", name: "Inter Parfums", exchange: "NASDAQ", section: "beauty", tvSymbol: "NASDAQ-IPAR" },
+  { yahoo: "PUIG.MC", display: "PUIG", name: "Puig", exchange: "BME", section: "beauty", tvSymbol: "BME-PUIG" },
+  { yahoo: "BBWI", display: "BBWI", name: "Bath & Body Works", exchange: "NYSE", section: "beauty", tvSymbol: "NYSE-BBWI" },
+  { yahoo: "4911.T", display: "4911", name: "Shiseido", exchange: "TSE", section: "beauty", tvSymbol: "TSE-4911" },
 ];
 
 export interface StockQuote {
   symbol: string;
   name: string;
   exchange: string;
-  section: "houses" | "luxury";
+  section: "houses" | "luxury" | "beauty";
   price: number | null;
   change: number | null;
   changePercent: number | null;
