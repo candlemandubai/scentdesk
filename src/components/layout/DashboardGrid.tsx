@@ -26,6 +26,7 @@ import PerfumerSpotlight from "@/components/widgets/PerfumerSpotlight";
 import JobsBoard from "@/components/widgets/JobsBoard";
 import CommunityFeed from "@/components/widgets/CommunityFeed";
 import YouTubeFeed from "@/components/widgets/YouTubeFeed";
+import StockTracker from "@/components/widgets/StockTracker";
 
 const widgetComponents: Record<WidgetType, React.ComponentType> = {
   "news-feed": NewsFeed,
@@ -45,6 +46,7 @@ const widgetComponents: Record<WidgetType, React.ComponentType> = {
   "jobs-board": JobsBoard,
   "community-feed": CommunityFeed,
   "youtube-feed": YouTubeFeed,
+  "stock-tracker": StockTracker,
 };
 
 const BREAKPOINTS = { lg: 1200, md: 900, sm: 0 } as const;

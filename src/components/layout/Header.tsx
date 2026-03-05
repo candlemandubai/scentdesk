@@ -142,7 +142,7 @@ export default function Header() {
               <span className="text-[13px] font-mono font-bold tracking-wider text-white">
                 SCENT<span className="text-scent-accent">DESK</span>
               </span>
-              <span className="text-[10px] font-mono text-gray-600">v1.0.11</span>
+              <span className="text-[10px] font-mono text-gray-600">v1.0.12</span>
             </button>
 
             <a
