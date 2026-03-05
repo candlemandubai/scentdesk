@@ -40,10 +40,6 @@ const apps: AppLink[] = [
   { name: "Sniff", description: "Discover & track fragrances, get recommendations", url: "https://sniff.me", category: "app", icon: "S", socials: [
     { type: "instagram", url: "https://instagram.com/sniff.app" },
   ]},
-  { name: "NSTPRF", description: "Niche fragrance sampling & discovery service", url: "https://www.nstprf.com", category: "app", icon: "N", socials: [
-    { type: "instagram", url: "https://instagram.com/nstprf" },
-  ]},
-
   // Reference & Regulation
   { name: "IFRA", description: "International Fragrance Association — standards & safety", url: "https://ifrafragrance.org", category: "regulation", icon: "I" },
   { name: "The Good Scents Company", description: "Aroma chemical & ingredient data reference", url: "http://www.thegoodscentscompany.com", category: "reference", icon: "G" },
