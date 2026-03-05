@@ -23,7 +23,9 @@ const RSS_FEEDS: FeedSource[] = [
   { url: "https://www.globalcosmeticsnews.com/feed/", source: "Global Cosmetics News", category: "Market" },
   { url: "https://www.premiumbeautynews.com/en/?format=feed&type=rss", source: "Premium Beauty News", category: "Launches" },
   // Business/market feeds that cover fragrance/luxury
-  { url: "https://www.businessoffashion.com/rss", source: "Business of Fashion", category: "Market" },
+  { url: "https://www.businessoffashion.com/feed", source: "Business of Fashion", category: "Market" },
+  { url: "https://www.businessoffashion.com/feed/beauty", source: "BoF Beauty", category: "Industry" },
+  { url: "https://wwd.com/beauty-industry-news/feed/", source: "WWD Beauty", category: "Industry" },
   { url: "https://feeds.feedburner.com/beautypackaging/dOWj", source: "Beauty Packaging", category: "Supply Chain" },
   // General Reuters business (filtered for fragrance)
   { url: "https://news.google.com/rss/search?q=fragrance+industry+OR+perfume+market+OR+essential+oils+market&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Market" },
