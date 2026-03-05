@@ -23,7 +23,6 @@ interface YouTubeChannel {
 const CHANNELS: YouTubeChannel[] = [
   { channelId: "UCzKrJ5NSA9o7RHYRG12kHZw", name: "Jeremy Fragrance" },
   { channelId: "UC88iYYngvMLb_3obJKMCI3w", name: "Demi Rawling" },
-  { channelId: "UCcwPIKNTMO5S-Vd7z-RrIhg", name: "CurlyFragrance" },
   { channelId: "UCMz0tE1qg5SwmrAF3Cshe0A", name: "The Fragrance Apprentice" },
   { channelId: "UCuSy0Z5UwvkMQ7lXRbUdOnQ", name: "Redolessence" },
   { channelId: "UCCKJhoBHK4Xs5zneLo5qFXg", name: "Brooklyn Fragrance Lover" },
