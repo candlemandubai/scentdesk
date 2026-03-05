@@ -36,6 +36,9 @@ const RSS_FEEDS: FeedSource[] = [
   // Home fragrance — candles, diffusers, room sprays
   { url: "https://news.google.com/rss/search?q=scented+candle+market+OR+candle+industry+OR+luxury+candles+brand&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Home Fragrance" },
   { url: "https://news.google.com/rss/search?q=reed+diffuser+market+OR+room+spray+market+OR+home+fragrance+industry&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Home Fragrance" },
+  // Candle industry associations
+  { url: "https://candleseurope.com/feed/", source: "ECMA", category: "Home Fragrance" },
+  { url: "https://candles.org/feed/", source: "National Candle Association", category: "Home Fragrance" },
   // Specialist fragrance publications
   { url: "https://perfumesociety.org/feed", source: "The Perfume Society", category: "Launches" },
   { url: "https://cosmeticsbusiness.com/rss", source: "Cosmetics Business", category: "Industry" },
@@ -81,7 +84,7 @@ function smartCategory(title: string, defaultCategory: string, isGoogleNews: boo
     return "M&A";
 
   // Regulatory — IFRA, bans, compliance, EU/FDA
-  if (/\b(ifra|regulation|regulatory|compliance|restrict|ban|amendment|directive|eu cosmetics|fda|reach|echa|safety assessment)\b/.test(t))
+  if (/\b(ifra|regulation|regulatory|compliance|restrict|ban|amendment|directive|eu cosmetics|fda|reach|echa|safety assessment|anti.dumping|dut(?:y|ies)|tariff)\b/.test(t))
     return "Regulatory";
 
   // Raw Materials / Supply Chain
