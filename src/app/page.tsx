@@ -54,8 +54,8 @@ export default function Home() {
     );
     console.log(
       "%c  Hey, you found the console. Nice.\n" +
-      "  We're open source because we think the fragrance\n" +
-      "  industry deserves better access to data.\n\n" +
+      "  We're open source because we love this industry\n" +
+      "  and believe in building together.\n\n" +
       "  Want to contribute? We'd love that.\n\n" +
       "  GitHub:     github.com/candlemandubai/scentdesk\n" +
       "  Email:      hello@olfactal.com\n" +
