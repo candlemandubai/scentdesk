@@ -31,6 +31,7 @@ export const mockEvents: FragranceEvent[] = [
   { id: "nca1", name: "NCA Annual Conference", type: "conference", date: "2026-04-20", location: "Houston, TX", city: "Houston", country: "USA", lat: 29.7604, lng: -95.3698, url: "https://candles.org/annual-conference/" },
   // MAY
   { id: "6", name: "BEAUTYISTANBUL", type: "trade-show", date: "2026-05-07", location: "TÜYAP Fair Center", city: "Istanbul", country: "Turkey", lat: 41.0024, lng: 28.6220, url: "https://beauty-istanbul.com", instagram: "https://instagram.com/beautyistanbul_" },
+  { id: "ctpa1", name: "CTPA Sustainability Summit", type: "conference", date: "2026-05-20", location: "Woburn House", city: "London", country: "UK", lat: 51.5263, lng: -0.1292, url: "https://www.ctpa.org.uk/" },
   { id: "15", name: "Beautyworld Saudi Arabia", type: "trade-show", date: "2026-05-18", location: "Riyadh International Convention & Exhibition Center", city: "Riyadh", country: "Saudi Arabia", lat: 24.7136, lng: 46.6753, url: "https://beautyworld-saudi-arabia.ae.messefrankfurt.com" },
   { id: "5", name: "SIMPPAR Grasse", type: "trade-show", date: "2026-05-26", location: "Cours Honoré Cresp", city: "Grasse", country: "France", lat: 43.6601, lng: 6.9232, url: "https://www.simppar.fr/en/", instagram: "https://instagram.com/simppar_officiel" },
   // JUNE
