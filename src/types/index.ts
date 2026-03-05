@@ -32,7 +32,8 @@ export type WidgetType =
   | "perfumer-spotlight"
   | "jobs-board"
   | "daily-brief"
-  | "community-feed";
+  | "community-feed"
+  | "youtube-feed";
 
 export interface NewsItem {
   id: string;
