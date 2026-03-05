@@ -36,9 +36,15 @@ const RSS_FEEDS: FeedSource[] = [
   { url: "https://news.google.com/rss/search?q=sandalwood+harvest+OR+vetiver+oil+OR+patchouli+oil+OR+rose+oil+Bulgaria+OR+fragrance+ingredient+shortage+OR+aroma+chemicals&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Raw Materials" },
   { url: "https://news.google.com/rss/search?q=vanilla+Madagascar+harvest+OR+lavender+Provence+OR+bergamot+Calabria+OR+jasmine+Grasse+OR+ylang+ylang+OR+tonka+bean&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Raw Materials" },
   { url: "https://news.google.com/rss/search?q=synthetic+fragrance+ingredient+OR+lab+grown+musk+OR+sustainable+sourcing+perfume+OR+fragrance+supply+chain+disruption&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Raw Materials" },
+  { url: "https://news.google.com/rss/search?q=aroma+chemicals+market+OR+fragrance+raw+material+cost+OR+natural+ingredient+perfume+supply&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Raw Materials" },
+  { url: "https://news.google.com/rss/search?q=essential+oil+export+OR+citrus+oil+price+OR+clove+oil+OR+eucalyptus+oil+market+OR+mint+oil+price&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Raw Materials" },
+  { url: "https://news.google.com/rss/search?q=%22fragrance+ingredient%22+OR+%22perfume+ingredient%22+OR+%22cosmetic+raw+material%22+supply+chain&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Raw Materials" },
   // Home fragrance — candles, diffusers, room sprays
   { url: "https://news.google.com/rss/search?q=scented+candle+market+OR+candle+industry+OR+luxury+candles+brand&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Home Fragrance" },
   { url: "https://news.google.com/rss/search?q=reed+diffuser+market+OR+room+spray+market+OR+home+fragrance+industry&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Home Fragrance" },
+  { url: "https://news.google.com/rss/search?q=Bath+%26+Body+Works+OR+Yankee+Candle+OR+Diptyque+candle+OR+Jo+Malone+home&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Home Fragrance" },
+  { url: "https://news.google.com/rss/search?q=home+fragrance+brand+OR+luxury+candle+launch+OR+wax+melt+market+OR+car+fragrance+market&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Home Fragrance" },
+  { url: "https://news.google.com/rss/search?q=candle+making+business+OR+soy+wax+market+OR+fragrance+oil+supplier+OR+candle+trend+2026&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Home Fragrance" },
   // Candle industry associations
   { url: "https://candleseurope.com/feed/", source: "ECMA", category: "Home Fragrance" },
   { url: "https://candles.org/feed/", source: "National Candle Association", category: "Home Fragrance" },
