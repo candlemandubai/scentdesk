@@ -31,7 +31,8 @@ export type WidgetType =
   | "newsletter-signup"
   | "perfumer-spotlight"
   | "jobs-board"
-  | "daily-brief";
+  | "daily-brief"
+  | "community-feed";
 
 export interface NewsItem {
   id: string;
