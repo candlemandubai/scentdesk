@@ -128,9 +128,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    // Add these once you have the actual verification codes
-    // google: "your-google-verification-code",
-    // yandex: "your-yandex-verification-code",
+    google: "4rdmCc3HsSWnfBuDECKkJ5EhhkvkeDwaAAeA3g_emQ4",
   },
   category: "Business & Finance",
 };
