@@ -64,10 +64,10 @@ export const useDashboardStore = create<DashboardState>()(
     }),
     {
       name: "scent-desk-v2",
-      version: 13,
+      version: 14,
       migrate: (persisted: unknown, version: number) => {
         const state = persisted as DashboardState;
-        if (version < 13) {
+        if (version < 14) {
           // Re-sync with defaultWidgets order, preserving user enabled/disabled state
           const enabledMap = new Map(state.widgets.map((w) => [w.id, w.enabled]));
           const merged = defaultWidgets.map((dw) => ({

@@ -1,18 +1,23 @@
 import type { Widget } from "@/types";
 
 export const defaultWidgets: Widget[] = [
-  // Feed tab — Intelligence Brief first (compact summary, great for mobile)
+  // Feed tab — rows must sum to 12 columns
+  // Row 1: Brief(4) + Market(8) = 12
   { id: "daily-brief", type: "daily-brief", title: "Intelligence Brief", enabled: true, x: 8, y: 0, w: 4, h: 4, minW: 3, minH: 3, tab: "feed" },
   { id: "news-market", type: "news-market", title: "Market & M&A", enabled: true, x: 0, y: 0, w: 8, h: 5, minW: 4, minH: 3, tab: "feed" },
-  { id: "news-launches", type: "news-launches", title: "Launches & Industry", enabled: true, x: 8, y: 4, w: 4, h: 5, minW: 4, minH: 3, tab: "feed" },
-  { id: "news-materials", type: "news-materials", title: "Raw Materials & Supply", enabled: true, x: 0, y: 5, w: 4, h: 5, minW: 4, minH: 3, tab: "feed" },
-  { id: "news-home", type: "news-home", title: "Home Fragrance", enabled: true, x: 4, y: 5, w: 4, h: 5, minW: 4, minH: 3, tab: "feed" },
+  // Row 2: Launches(4) + Materials(4) + Home(4) = 12
+  { id: "news-launches", type: "news-launches", title: "Launches & Industry", enabled: true, x: 0, y: 5, w: 4, h: 5, minW: 4, minH: 3, tab: "feed" },
+  { id: "news-materials", type: "news-materials", title: "Raw Materials & Supply", enabled: true, x: 4, y: 5, w: 4, h: 5, minW: 4, minH: 3, tab: "feed" },
+  { id: "news-home", type: "news-home", title: "Home Fragrance", enabled: true, x: 8, y: 5, w: 4, h: 5, minW: 4, minH: 3, tab: "feed" },
+  // Row 3: Regulatory(4) + Community(8) = 12
   { id: "regulatory-updates", type: "regulatory-updates", title: "Regulatory Updates", enabled: true, x: 0, y: 10, w: 4, h: 5, minW: 3, minH: 3, tab: "feed" },
-  { id: "community-feed", type: "community-feed", title: "Community", enabled: true, x: 8, y: 9, w: 4, h: 5, minW: 3, minH: 3, tab: "feed" },
-  { id: "stock-tracker", type: "stock-tracker", title: "Industry Stocks", enabled: true, x: 0, y: 14, w: 6, h: 6, minW: 4, minH: 4, tab: "feed" },
-  { id: "youtube-feed", type: "youtube-feed", title: "Fragrance YouTube", enabled: true, x: 4, y: 14, w: 4, h: 5, minW: 4, minH: 3, tab: "feed" },
-  { id: "newsletter-signup", type: "newsletter-signup", title: "olfactal.com", enabled: true, x: 8, y: 14, w: 4, h: 3, minW: 3, minH: 3, tab: "feed" },
-  { id: "world-clock", type: "world-clock", title: "Fragrance Capitals", enabled: true, x: 8, y: 17, w: 4, h: 3, minW: 4, minH: 2, tab: "feed" },
+  { id: "community-feed", type: "community-feed", title: "Community", enabled: true, x: 4, y: 10, w: 8, h: 5, minW: 3, minH: 3, tab: "feed" },
+  // Row 4: Stocks(6) + YouTube(6) = 12
+  { id: "stock-tracker", type: "stock-tracker", title: "Industry Stocks", enabled: true, x: 0, y: 15, w: 6, h: 6, minW: 4, minH: 4, tab: "feed" },
+  { id: "youtube-feed", type: "youtube-feed", title: "Fragrance YouTube", enabled: true, x: 6, y: 15, w: 6, h: 5, minW: 4, minH: 3, tab: "feed" },
+  // Row 5: Newsletter(4) + Clock(8) = 12
+  { id: "newsletter-signup", type: "newsletter-signup", title: "olfactal.com", enabled: true, x: 0, y: 21, w: 4, h: 3, minW: 3, minH: 3, tab: "feed" },
+  { id: "world-clock", type: "world-clock", title: "Fragrance Capitals", enabled: true, x: 4, y: 21, w: 8, h: 3, minW: 4, minH: 2, tab: "feed" },
 
   // Directory tab — curated real industry data
   { id: "events-calendar", type: "events-calendar", title: "Upcoming Events", enabled: true, x: 0, y: 0, w: 6, h: 5, minW: 4, minH: 3, tab: "directory" },
