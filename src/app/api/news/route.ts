@@ -29,7 +29,7 @@ const RSS_FEEDS: FeedSource[] = [
   { url: "https://feeds.feedburner.com/beautypackaging/dOWj", source: "Beauty Packaging", category: "Supply Chain" },
   // General Reuters business (filtered for fragrance)
   { url: "https://news.google.com/rss/search?q=fragrance+industry+OR+perfume+market+OR+essential+oils+market&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Market" },
-  { url: "https://news.google.com/rss/search?q=IFRA+OR+fragrance+regulation+OR+cosmetics+regulation&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Regulatory" },
+  { url: "https://news.google.com/rss/search?q=IFRA+OR+fragrance+regulation+OR+cosmetics+regulation+OR+CTPA+OR+CLP+cosmetics&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Regulatory" },
   { url: "https://news.google.com/rss/search?q=Givaudan+OR+IFF+OR+Firmenich+OR+Symrise+fragrance&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "M&A" },
   { url: "https://news.google.com/rss/search?q=new+perfume+launch+2026+OR+fragrance+launch&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Launches" },
   { url: "https://news.google.com/rss/search?q=essential+oils+price+OR+raw+materials+fragrance+OR+vanilla+price+OR+sandalwood+price&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Raw Materials" },
@@ -83,8 +83,8 @@ function smartCategory(title: string, defaultCategory: string, isGoogleNews: boo
   if (/\b(acqui|merger|deal|buyout|takeover|partnership|joint venture|stake|invest[sm]|ipo|valuation|revenue|earning|fiscal|quarterly)\b/.test(t))
     return "M&A";
 
-  // Regulatory — IFRA, bans, compliance, EU/FDA
-  if (/\b(ifra|regulation|regulatory|compliance|restrict|ban|amendment|directive|eu cosmetics|fda|reach|echa|safety assessment|anti.dumping|dut(?:y|ies)|tariff)\b/.test(t))
+  // Regulatory — IFRA, bans, compliance, EU/FDA, CTPA, CLP
+  if (/\b(ifra|regulation|regulatory|compliance|restrict|ban|amendment|directive|eu cosmetics|fda|reach|echa|safety assessment|anti.dumping|dut(?:y|ies)|tariff|ctpa|clp|labelling)\b/.test(t))
     return "Regulatory";
 
   // Raw Materials / Supply Chain
