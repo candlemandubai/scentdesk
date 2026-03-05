@@ -32,7 +32,8 @@ const RSS_FEEDS: FeedSource[] = [
   { url: "https://news.google.com/rss/search?q=IFRA+OR+fragrance+regulation+OR+cosmetics+regulation+OR+CTPA+OR+CLP+cosmetics&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Regulatory" },
   { url: "https://news.google.com/rss/search?q=Givaudan+OR+IFF+OR+Firmenich+OR+Symrise+fragrance&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "M&A" },
   { url: "https://news.google.com/rss/search?q=new+perfume+launch+2026+OR+fragrance+launch&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Launches" },
-  { url: "https://news.google.com/rss/search?q=essential+oils+price+OR+raw+materials+fragrance+OR+vanilla+price+OR+sandalwood+price&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Raw Materials" },
+  { url: "https://news.google.com/rss/search?q=essential+oils+price+OR+raw+materials+fragrance+OR+vanilla+price+OR+sandalwood+price+OR+oud+oil+price&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Raw Materials" },
+  { url: "https://news.google.com/rss/search?q=sandalwood+harvest+OR+vetiver+oil+OR+patchouli+oil+OR+rose+oil+Bulgaria+OR+fragrance+ingredient+shortage+OR+aroma+chemicals&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Raw Materials" },
   // Home fragrance — candles, diffusers, room sprays
   { url: "https://news.google.com/rss/search?q=scented+candle+market+OR+candle+industry+OR+luxury+candles+brand&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Home Fragrance" },
   { url: "https://news.google.com/rss/search?q=reed+diffuser+market+OR+room+spray+market+OR+home+fragrance+industry&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Home Fragrance" },
@@ -75,9 +76,17 @@ function guessSentiment(title: string): "positive" | "negative" | "neutral" {
  * Only overrides for non-Google News feeds (Google feeds are already topic-specific).
  */
 function smartCategory(title: string, defaultCategory: string, isGoogleNews: boolean): string {
-  if (isGoogleNews) return defaultCategory; // Google feeds are already targeted
-
   const t = title.toLowerCase();
+
+  // For Google News: only override when a specific-ingredient keyword is found
+  // but the article landed in a generic feed (e.g. "sandalwood" in Market feed)
+  if (isGoogleNews) {
+    if (/\b(sandalwood|vetiver|oud|patchouli|vanilla|rose oil|musk|amber|essential oil|harvest|shortage|crop|distill|aroma chemical)\b/.test(t)
+        && defaultCategory !== "Raw Materials") {
+      return "Raw Materials";
+    }
+    return defaultCategory;
+  }
 
   // M&A / Deals — acquisitions, mergers, partnerships
   if (/\b(acqui|merger|deal|buyout|takeover|partnership|joint venture|stake|invest[sm]|ipo|valuation|revenue|earning|fiscal|quarterly)\b/.test(t))
