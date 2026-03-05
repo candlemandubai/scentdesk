@@ -42,12 +42,12 @@ const FALLBACK_CHANNELS = [
   { name: "Jeremy Fragrance", url: "https://www.youtube.com/@JeremyFragrance" },
   { name: "Demi Rawling", url: "https://www.youtube.com/@DemiRawling" },
   { name: "The Fragrance Apprentice", url: "https://www.youtube.com/@TheFragranceApprentice" },
-  { name: "Redolessence", url: "https://www.youtube.com/@Redolessence" },
   { name: "Brooklyn Fragrance Lover", url: "https://www.youtube.com/@BrooklynFragranceLover" },
   { name: "Fragrance Du Bois", url: "https://www.youtube.com/@FragranceDuBois" },
-  { name: "TLTG Reviews", url: "https://www.youtube.com/@TLTGReviews" },
-  { name: "Gents Scents", url: "https://www.youtube.com/@GentsScents" },
-  { name: "Chaos Fragrances", url: "https://www.youtube.com/@ChaosFragrances" },
+  { name: "Luckyscent", url: "https://www.youtube.com/@luckyscent" },
+  { name: "Candleman Dubai", url: "https://www.youtube.com/@candlemandubai" },
+  { name: "Perfumerism", url: "https://www.youtube.com/@perfumerism" },
+  { name: "The Fragrance Foundation", url: "https://www.youtube.com/@fragrancefoundation" },
 ];
 
 export default function YouTubeFeed() {
@@ -63,7 +63,7 @@ export default function YouTubeFeed() {
     <WidgetWrapper
       title="Fragrance YouTube"
       badge={<><LiveBadge /><CountBadge count={videos.length} /></>}
-      info="Latest videos from top fragrance YouTubers — Jeremy Fragrance, Demi Rawling, Redolessence, Brooklyn Fragrance Lover, Gents Scents, Chaos Fragrances, and more. Auto-refreshes every 5 minutes."
+      info="Latest videos from top fragrance YouTubers — Jeremy Fragrance, Demi Rawling, Brooklyn Fragrance Lover, Luckyscent, Candleman Dubai, Perfumerism, The Fragrance Foundation, and more. Auto-refreshes every 5 minutes."
       headerRight={
         <button
           onClick={refetch}

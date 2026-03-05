@@ -24,12 +24,12 @@ const CHANNELS: YouTubeChannel[] = [
   { channelId: "UCzKrJ5NSA9o7RHYRG12kHZw", name: "Jeremy Fragrance" },
   { channelId: "UC88iYYngvMLb_3obJKMCI3w", name: "Demi Rawling" },
   { channelId: "UCMz0tE1qg5SwmrAF3Cshe0A", name: "The Fragrance Apprentice" },
-  { channelId: "UCuSy0Z5UwvkMQ7lXRbUdOnQ", name: "Redolessence" },
   { channelId: "UCCKJhoBHK4Xs5zneLo5qFXg", name: "Brooklyn Fragrance Lover" },
   { channelId: "UCb_KHhZPlnuakJef3zcexEA", name: "Fragrance Du Bois" },
-  { channelId: "UCmYZrY_MVZy5Iiwlua029kg", name: "TLTG Reviews" },
-  { channelId: "UC9IImcLkUdmURWtQhxu8VwQ", name: "Gents Scents" },
-  { channelId: "UC0fOGtvT1x8irPUZOFdF2mA", name: "Chaos Fragrances" },
+  { channelId: "UCGoCE1cbRjrA0vKldY_HM8A", name: "Luckyscent" },
+  { channelId: "UC8g5GmyT9QVjFxnQevzVncg", name: "Candleman Dubai" },
+  { channelId: "UCKtI2EPpyNu27M4BNeCVg9w", name: "Perfumerism" },
+  { channelId: "UC8rHlQ7RyyVbj762TSsDPdA", name: "The Fragrance Foundation" },
 ];
 
 function getTimeSince(dateStr: string): string {

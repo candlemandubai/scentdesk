@@ -15,6 +15,9 @@ interface StockTicker {
   name: string;
   exchange: string;
   url: string;
+  price?: number | null;
+  changePercent?: number | null;
+  currency?: string;
 }
 
 const STOCK_TICKERS: StockTicker[] = [
@@ -42,6 +45,7 @@ type MixedItem =
 
 export default function MarketTicker() {
   const [headlines, setHeadlines] = useState<TickerItem[]>([]);
+  const [stockData, setStockData] = useState<StockTicker[]>(STOCK_TICKERS);
 
   useEffect(() => {
     fetch("/api/news")
@@ -59,6 +63,31 @@ export default function MarketTicker() {
         }
       })
       .catch(() => {});
+
+    // Fetch live stock prices
+    fetch("/api/stocks")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.quotes?.length) {
+          setStockData(
+            STOCK_TICKERS.map((ticker) => {
+              const quote = data.quotes.find(
+                (q: { symbol: string }) => q.symbol === ticker.symbol
+              );
+              if (quote) {
+                return {
+                  ...ticker,
+                  price: quote.price,
+                  changePercent: quote.changePercent,
+                  currency: quote.currency,
+                };
+              }
+              return ticker;
+            })
+          );
+        }
+      })
+      .catch(() => {});
   }, []);
 
   // Interleave stock tickers with news: insert a stock ticker every 3 headlines
@@ -68,13 +97,13 @@ export default function MarketTicker() {
     let stockIdx = 0;
     for (let i = 0; i < headlines.length; i++) {
       result.push({ type: "news", item: headlines[i] });
-      if ((i + 1) % 3 === 0 && stockIdx < STOCK_TICKERS.length) {
-        result.push({ type: "stock", item: STOCK_TICKERS[stockIdx] });
+      if ((i + 1) % 3 === 0 && stockIdx < stockData.length) {
+        result.push({ type: "stock", item: stockData[stockIdx] });
         stockIdx++;
       }
     }
     return result;
-  }, [headlines]);
+  }, [headlines, stockData]);
 
   if (!headlines.length) {
     return (
@@ -109,17 +138,31 @@ export default function MarketTicker() {
             href={(entry.item as StockTicker).url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 mx-4 whitespace-nowrap group"
+            className="inline-flex items-center gap-1.5 mx-4 whitespace-nowrap group"
           >
             <span className="text-[10px] font-mono font-bold text-emerald-400">
               {(entry.item as StockTicker).symbol}
             </span>
-            <span className="text-[9px] font-mono text-gray-500 group-hover:text-gray-300 transition-colors">
-              {(entry.item as StockTicker).name}
-            </span>
-            <span className="text-[9px] font-mono text-gray-600">
-              {(entry.item as StockTicker).exchange}
-            </span>
+            {(entry.item as StockTicker).price != null && (
+              <>
+                <span className="text-[10px] font-mono text-gray-300">
+                  {(entry.item as StockTicker).price!.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </span>
+                <span className={`text-[10px] font-mono font-semibold ${
+                  ((entry.item as StockTicker).changePercent ?? 0) >= 0
+                    ? "text-emerald-400"
+                    : "text-red-400"
+                }`}>
+                  {((entry.item as StockTicker).changePercent ?? 0) >= 0 ? "▲" : "▼"}
+                  {Math.abs((entry.item as StockTicker).changePercent ?? 0)}%
+                </span>
+              </>
+            )}
+            {(entry.item as StockTicker).price == null && (
+              <span className="text-[9px] font-mono text-gray-600">
+                {(entry.item as StockTicker).exchange}
+              </span>
+            )}
           </a>
         )
       )}
