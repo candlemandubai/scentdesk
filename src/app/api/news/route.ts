@@ -80,6 +80,11 @@ function guessSentiment(title: string): "positive" | "negative" | "neutral" {
 function smartCategory(title: string, defaultCategory: string, isGoogleNews: boolean): string {
   const t = title.toLowerCase();
 
+  // Market research reports — catch these FIRST to prevent misclassification
+  // Articles like "Europe Cologne Market Size & Share Report, 2034" should be Market, not Raw Materials
+  if (/\b(market size|market share|market value|market report|industry report|market forecast|market analysis|market outlook|market revenue)\b/.test(t))
+    return "Market";
+
   // For Google News: only override when a specific-ingredient keyword is found
   // but the article landed in a generic feed (e.g. "sandalwood" in Market feed)
   if (isGoogleNews) {

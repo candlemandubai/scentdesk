@@ -1,141 +1,127 @@
 "use client";
-import { useEffect, useRef, useState, memo, useCallback } from "react";
+import { useCallback, useRef, useState, useEffect, memo } from "react";
 import WidgetWrapper, { LiveBadge, CountBadge } from "./WidgetWrapper";
-import { RefreshCw, TrendingUp, ExternalLink } from "lucide-react";
+import { useLiveData } from "@/hooks/useLiveData";
+import { RefreshCw, TrendingUp, TrendingDown, Minus, ExternalLink, BarChart3 } from "lucide-react";
+import type { StockQuote } from "@/app/api/stocks/route";
 
-// TradingView Market Overview widget config
-const WIDGET_CONFIG = {
-  colorTheme: "dark",
-  dateRange: "12M",
-  showChart: true,
-  locale: "en",
-  isTransparent: true,
-  showSymbolLogo: true,
-  showFloatingTooltip: true,
-  width: "100%",
-  height: "100%",
-  backgroundColor: "rgba(0,0,0,0)",
-  scaleFontColor: "#9ca3af",
-  tabs: [
-    {
-      title: "Fragrance Houses",
-      symbols: [
-        { s: "SIX:GIVN", d: "Givaudan SA" },
-        { s: "NYSE:IFF", d: "Intl Flavors & Fragrances" },
-        { s: "XETR:SY1", d: "Symrise AG" },
-        { s: "EURONEXT:DSFIR", d: "dsm-firmenich" },
-      ],
-    },
-    {
-      title: "Luxury & Consumer",
-      symbols: [
-        { s: "EURONEXT:MC", d: "LVMH" },
-        { s: "NYSE:EL", d: "Estee Lauder" },
-        { s: "NYSE:COTY", d: "Coty Inc" },
-        { s: "NASDAQ:IPAR", d: "Inter Parfums" },
-        { s: "BME:PUIG", d: "Puig Brands" },
-      ],
-    },
-  ],
-};
+interface StocksResponse {
+  quotes: StockQuote[];
+  lastUpdated: string;
+  live: boolean;
+}
 
-// Static fallback data for when TradingView is unavailable
-const FALLBACK_STOCKS = [
-  { ticker: "GIVN", name: "Givaudan SA", exchange: "SIX", url: "https://www.tradingview.com/symbols/SIX-GIVN/" },
-  { ticker: "IFF", name: "Intl Flavors & Fragrances", exchange: "NYSE", url: "https://www.tradingview.com/symbols/NYSE-IFF/" },
-  { ticker: "SY1", name: "Symrise AG", exchange: "XETR", url: "https://www.tradingview.com/symbols/XETR-SY1/" },
-  { ticker: "DSFIR", name: "dsm-firmenich", exchange: "EURONEXT", url: "https://www.tradingview.com/symbols/EURONEXT-DSFIR/" },
-  { ticker: "MC", name: "LVMH Moët Hennessy", exchange: "EURONEXT", url: "https://www.tradingview.com/symbols/EURONEXT-MC/" },
-  { ticker: "EL", name: "Estée Lauder", exchange: "NYSE", url: "https://www.tradingview.com/symbols/NYSE-EL/" },
-  { ticker: "COTY", name: "Coty Inc", exchange: "NYSE", url: "https://www.tradingview.com/symbols/NYSE-COTY/" },
-  { ticker: "IPAR", name: "Inter Parfums", exchange: "NASDAQ", url: "https://www.tradingview.com/symbols/NASDAQ-IPAR/" },
-  { ticker: "PUIG", name: "Puig Brands", exchange: "BME", url: "https://www.tradingview.com/symbols/BME-PUIG/" },
-];
+const fallback: StocksResponse = { quotes: [], lastUpdated: "", live: false };
 
-function FallbackView({ onRetry }: { onRetry: () => void }) {
+/* ─── Mini sparkline SVG ─── */
+function Sparkline({ data, positive }: { data: number[]; positive: boolean }) {
+  if (data.length < 2) return null;
+  const min = Math.min(...data);
+  const max = Math.max(...data);
+  const range = max - min || 1;
+  const w = 48;
+  const h = 16;
+  const points = data
+    .map((v, i) => `${(i / (data.length - 1)) * w},${h - ((v - min) / range) * h}`)
+    .join(" ");
+
   return (
-    <div className="px-1">
-      {/* Friendly message */}
-      <div className="flex items-center gap-2 py-2 mb-3 px-2.5 bg-amber-500/5 rounded border border-amber-500/10">
-        <TrendingUp size={12} className="text-amber-400 shrink-0" />
-        <span className="text-[10px] text-amber-300/80 font-mono leading-tight">
-          Live chart temporarily unavailable — TradingView&apos;s servers are warming up. Click any ticker to view on TradingView.
-        </span>
-      </div>
-
-      {/* Section: Fragrance Houses */}
-      <div className="text-[9px] font-mono font-semibold text-gray-500 uppercase tracking-wider mb-1.5 px-1">
-        Fragrance & Flavor Houses
-      </div>
-      <div className="space-y-0.5 mb-3">
-        {FALLBACK_STOCKS.slice(0, 4).map((stock) => (
-          <a
-            key={stock.ticker}
-            href={stock.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 py-1.5 px-2 rounded hover:bg-scent-border/30 transition-colors group"
-          >
-            <span className="text-[11px] font-mono font-bold text-scent-accent w-[48px]">
-              {stock.ticker}
-            </span>
-            <span className="text-[11px] text-gray-400 flex-1 truncate group-hover:text-gray-200 transition-colors">
-              {stock.name}
-            </span>
-            <span className="text-[9px] font-mono text-gray-600">{stock.exchange}</span>
-            <ExternalLink size={9} className="text-gray-600 group-hover:text-scent-accent transition-colors" />
-          </a>
-        ))}
-      </div>
-
-      {/* Section: Luxury & Consumer */}
-      <div className="text-[9px] font-mono font-semibold text-gray-500 uppercase tracking-wider mb-1.5 px-1">
-        Luxury & Consumer Brands
-      </div>
-      <div className="space-y-0.5 mb-3">
-        {FALLBACK_STOCKS.slice(4).map((stock) => (
-          <a
-            key={stock.ticker}
-            href={stock.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 py-1.5 px-2 rounded hover:bg-scent-border/30 transition-colors group"
-          >
-            <span className="text-[11px] font-mono font-bold text-scent-accent w-[48px]">
-              {stock.ticker}
-            </span>
-            <span className="text-[11px] text-gray-400 flex-1 truncate group-hover:text-gray-200 transition-colors">
-              {stock.name}
-            </span>
-            <span className="text-[9px] font-mono text-gray-600">{stock.exchange}</span>
-            <ExternalLink size={9} className="text-gray-600 group-hover:text-scent-accent transition-colors" />
-          </a>
-        ))}
-      </div>
-
-      {/* Retry button */}
-      <button
-        onClick={onRetry}
-        className="flex items-center gap-1.5 mx-auto text-[10px] font-mono text-gray-500 hover:text-scent-accent transition-colors py-1.5 px-3 rounded border border-scent-border/50 hover:border-scent-accent/30"
-      >
-        <RefreshCw size={10} />
-        Retry live chart
-      </button>
-    </div>
+    <svg width={w} height={h} className="shrink-0">
+      <polyline
+        points={points}
+        fill="none"
+        stroke={positive ? "#34d399" : "#f87171"}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }
 
-function TradingViewEmbed() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
-  const attemptRef = useRef(0);
+/* ─── Single stock row ─── */
+function StockRow({ quote }: { quote: StockQuote }) {
+  const isPositive = (quote.changePercent ?? 0) >= 0;
+  const hasData = quote.price !== null;
 
-  const loadWidget = useCallback(() => {
+  const changeColor = !hasData
+    ? "text-gray-600"
+    : isPositive
+      ? "text-emerald-400"
+      : "text-red-400";
+
+  const ChangeIcon = !hasData ? Minus : isPositive ? TrendingUp : TrendingDown;
+
+  // Format price with appropriate decimals
+  const formatPrice = (price: number, currency: string) => {
+    return new Intl.NumberFormat("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(price);
+  };
+
+  return (
+    <a
+      href={quote.tvUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center gap-2 py-1.5 px-2 rounded hover:bg-scent-border/30 transition-colors group"
+    >
+      {/* Ticker */}
+      <span className="text-[11px] font-mono font-bold text-scent-accent w-[44px] shrink-0">
+        {quote.symbol}
+      </span>
+
+      {/* Name */}
+      <span className="text-[11px] text-gray-400 flex-1 truncate group-hover:text-gray-200 transition-colors min-w-0">
+        {quote.name}
+      </span>
+
+      {/* Sparkline */}
+      {quote.sparkline.length >= 2 && (
+        <Sparkline data={quote.sparkline} positive={isPositive} />
+      )}
+
+      {/* Price */}
+      <span className="text-[11px] font-mono text-gray-200 w-[72px] text-right shrink-0 tabular-nums">
+        {hasData ? formatPrice(quote.price!, quote.currency) : "—"}
+      </span>
+
+      {/* Currency */}
+      <span className="text-[8px] font-mono text-gray-600 w-[24px] shrink-0">
+        {hasData ? quote.currency : ""}
+      </span>
+
+      {/* Change */}
+      <span className={`text-[10px] font-mono w-[56px] text-right shrink-0 tabular-nums flex items-center justify-end gap-0.5 ${changeColor}`}>
+        {hasData ? (
+          <>
+            <ChangeIcon size={8} />
+            {isPositive ? "+" : ""}{quote.changePercent}%
+          </>
+        ) : (
+          <span className="text-gray-600">—</span>
+        )}
+      </span>
+
+      {/* Exchange */}
+      <span className="text-[8px] font-mono text-gray-600 w-[52px] text-right shrink-0 hidden sm:block">
+        {quote.exchange}
+      </span>
+
+      {/* External link */}
+      <ExternalLink size={9} className="text-gray-700 group-hover:text-scent-accent transition-colors shrink-0" />
+    </a>
+  );
+}
+
+/* ─── TradingView mini chart modal ─── */
+function TradingViewChart({ symbol, onClose }: { symbol: string; onClose: () => void }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
     const node = containerRef.current;
     if (!node) return;
-
-    setStatus("loading");
-    node.innerHTML = "";
 
     const wrapper = document.createElement("div");
     wrapper.className = "tradingview-widget-container";
@@ -144,100 +130,174 @@ function TradingViewEmbed() {
 
     const inner = document.createElement("div");
     inner.className = "tradingview-widget-container__widget";
+    inner.style.height = "100%";
+    inner.style.width = "100%";
     wrapper.appendChild(inner);
 
     const script = document.createElement("script");
     script.type = "text/javascript";
     script.async = true;
-    script.src =
-      "https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js";
-    script.textContent = JSON.stringify(WIDGET_CONFIG);
-
-    // Detect script load failure
-    script.onerror = () => {
-      setStatus("error");
-    };
-
-    // Detect successful load — TradingView creates an iframe when it works
-    script.onload = () => {
-      // Give TradingView a moment to create the iframe
-      setTimeout(() => {
-        const iframe = node.querySelector("iframe");
-        if (iframe) {
-          setStatus("ready");
-        } else {
-          setStatus("error");
-        }
-      }, 2000);
-    };
+    script.src = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
+    script.textContent = JSON.stringify({
+      autosize: true,
+      symbol: symbol,
+      interval: "D",
+      timezone: "Etc/UTC",
+      theme: "dark",
+      style: "1",
+      locale: "en",
+      backgroundColor: "rgba(0, 0, 0, 0)",
+      gridColor: "rgba(255, 255, 255, 0.04)",
+      hide_top_toolbar: false,
+      hide_legend: false,
+      save_image: false,
+      calendar: false,
+      support_host: "https://www.tradingview.com",
+    });
 
     wrapper.appendChild(script);
     node.appendChild(wrapper);
 
-    // Timeout fallback — if nothing happens in 8 seconds, show error
-    setTimeout(() => {
-      const iframe = node.querySelector("iframe");
-      if (!iframe) {
-        setStatus((prev) => (prev === "loading" ? "error" : prev));
-      }
-    }, 8000);
-  }, []);
-
-  useEffect(() => {
-    loadWidget();
     return () => {
-      if (containerRef.current) {
-        containerRef.current.innerHTML = "";
-      }
+      node.innerHTML = "";
     };
-  }, [loadWidget]);
-
-  const handleRetry = useCallback(() => {
-    attemptRef.current += 1;
-    loadWidget();
-  }, [loadWidget]);
+  }, [symbol]);
 
   return (
-    <>
-      {/* Loading state */}
-      {status === "loading" && (
-        <div className="flex items-center gap-2 py-2 mb-2 px-2.5 bg-scent-accent/5 rounded border border-scent-accent/10">
-          <RefreshCw size={10} className="animate-spin text-scent-accent" />
-          <span className="text-[10px] text-scent-accent font-mono">Connecting to TradingView...</span>
-        </div>
-      )}
-
-      {/* TradingView container — hidden when error */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm" onClick={onClose}>
       <div
-        ref={containerRef}
-        className={`w-full min-h-[380px] h-full [&_.tradingview-widget-container]:h-full ${
-          status === "error" ? "hidden" : ""
-        }`}
-      />
-
-      {/* Error fallback */}
-      {status === "error" && <FallbackView onRetry={handleRetry} />}
-    </>
+        className="bg-scent-card border border-scent-border rounded-lg w-[90vw] max-w-[900px] h-[70vh] max-h-[600px] overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between px-4 py-2 border-b border-scent-border">
+          <span className="text-[11px] font-mono text-scent-accent font-bold">{symbol}</span>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-white text-xs px-2 py-1 rounded hover:bg-scent-border/50 transition-colors"
+          >
+            ✕ Close
+          </button>
+        </div>
+        <div ref={containerRef} className="w-full h-[calc(100%-40px)]" />
+      </div>
+    </div>
   );
 }
 
-const MemoizedTradingView = memo(TradingViewEmbed);
-
+/* ─── Main stock tracker widget ─── */
 export default function StockTracker() {
+  const { data, loading, refetch, isStale } = useLiveData<StocksResponse>({
+    url: "/api/stocks",
+    refreshInterval: 300000, // 5 min
+    fallbackData: fallback,
+  });
+
+  const [chartSymbol, setChartSymbol] = useState<string | null>(null);
+
+  const quotes = data.quotes || [];
+  const houses = quotes.filter((q) => q.section === "houses");
+  const luxury = quotes.filter((q) => q.section === "luxury");
+  const hasLiveData = quotes.some((q) => q.price !== null);
+
   return (
     <WidgetWrapper
       title="Industry Stocks"
       badge={
         <>
           <LiveBadge />
-          <CountBadge count={9} />
+          <CountBadge count={quotes.length || 9} />
         </>
       }
-      info="Live stock prices for fragrance & flavor houses (Givaudan, IFF, Symrise, dsm-firmenich) and luxury/consumer brands (LVMH, Estee Lauder, Coty, Inter Parfums, Puig). Data via TradingView with ~15min delay. Click any symbol for detailed chart."
+      info="Live stock prices for fragrance & flavor houses (Givaudan, IFF, Symrise, dsm-firmenich) and luxury/consumer brands (LVMH, Estée Lauder, Coty, Inter Parfums, Puig). Data refreshes every 5 minutes. Click any stock for a detailed TradingView chart."
+      headerRight={
+        <button
+          onClick={refetch}
+          className={`text-gray-500 hover:text-gray-300 transition-colors ${isStale ? "animate-spin" : ""}`}
+          title="Refresh"
+        >
+          <RefreshCw size={11} />
+        </button>
+      }
     >
-      <div className="h-full -mx-[14px] -mb-[12px] overflow-hidden px-[14px] pb-[12px]">
-        <MemoizedTradingView />
+      {/* Loading state */}
+      {loading && quotes.length === 0 && (
+        <div className="flex items-center gap-2 py-2 mb-2 px-2 bg-scent-accent/5 rounded border border-scent-accent/10">
+          <RefreshCw size={10} className="animate-spin text-scent-accent" />
+          <span className="text-[10px] text-scent-accent font-mono">Fetching stock data...</span>
+        </div>
+      )}
+
+      {/* Market status */}
+      {!loading && hasLiveData && (
+        <div className="flex items-center gap-2 px-2 mb-2">
+          <span className="text-[9px] font-mono text-gray-600">
+            {quotes[0]?.marketState === "regular" ? "🟢 Market Open" : "🔴 Market Closed"}
+          </span>
+        </div>
+      )}
+
+      {/* No data fallback */}
+      {!loading && !hasLiveData && quotes.length > 0 && (
+        <div className="flex items-center gap-2 py-2 mb-3 px-2.5 bg-amber-500/5 rounded border border-amber-500/10">
+          <TrendingUp size={12} className="text-amber-400 shrink-0" />
+          <span className="text-[10px] text-amber-300/80 font-mono leading-tight">
+            Live prices temporarily unavailable — click any ticker to view on TradingView.
+          </span>
+        </div>
+      )}
+
+      <div className="space-y-1 max-h-[420px] overflow-y-auto pr-1">
+        {/* Section: Fragrance Houses */}
+        {houses.length > 0 && (
+          <>
+            <div className="text-[9px] font-mono font-semibold text-gray-500 uppercase tracking-wider mb-0.5 px-2 pt-1">
+              Fragrance & Flavor Houses
+            </div>
+            <div className="space-y-0">
+              {houses.map((quote) => (
+                <StockRow key={quote.symbol} quote={quote} />
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* Section: Luxury & Consumer */}
+        {luxury.length > 0 && (
+          <>
+            <div className="text-[9px] font-mono font-semibold text-gray-500 uppercase tracking-wider mb-0.5 px-2 pt-2">
+              Luxury & Consumer Brands
+            </div>
+            <div className="space-y-0">
+              {luxury.map((quote) => (
+                <StockRow key={quote.symbol} quote={quote} />
+              ))}
+            </div>
+          </>
+        )}
       </div>
+
+      {/* Footer */}
+      {data.lastUpdated && (
+        <div className="mt-3 pt-2 border-t border-scent-border flex items-center justify-between">
+          <span className="text-[9px] font-mono text-gray-600">
+            Updated: {new Date(data.lastUpdated).toLocaleTimeString()}
+          </span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={refetch}
+              className="flex items-center gap-1 text-[9px] font-mono text-gray-500 hover:text-scent-accent transition-colors"
+            >
+              <RefreshCw size={8} />
+              Refresh
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* TradingView chart modal */}
+      {chartSymbol && (
+        <TradingViewChart symbol={chartSymbol} onClose={() => setChartSymbol(null)} />
+      )}
     </WidgetWrapper>
   );
 }
