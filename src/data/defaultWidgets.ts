@@ -10,6 +10,7 @@ export const defaultWidgets: Widget[] = [
   { id: "regulatory-updates", type: "regulatory-updates", title: "Regulatory Updates", enabled: true, x: 0, y: 10, w: 4, h: 5, minW: 3, minH: 3, tab: "feed" },
   { id: "world-clock", type: "world-clock", title: "Fragrance Capitals", enabled: true, x: 4, y: 10, w: 4, h: 3, minW: 4, minH: 2, tab: "feed" },
   { id: "community-feed", type: "community-feed", title: "Community", enabled: true, x: 8, y: 9, w: 4, h: 5, minW: 3, minH: 3, tab: "feed" },
+  { id: "youtube-feed", type: "youtube-feed", title: "Fragrance YouTube", enabled: true, x: 4, y: 13, w: 4, h: 5, minW: 4, minH: 3, tab: "feed" },
   { id: "newsletter-signup", type: "newsletter-signup", title: "olfactal.com", enabled: true, x: 8, y: 14, w: 4, h: 3, minW: 3, minH: 3, tab: "feed" },
 
   // Directory tab — curated real industry data
