@@ -83,24 +83,29 @@ function guessSentiment(title: string): "positive" | "negative" | "neutral" {
  * Only overrides for non-Google News feeds (Google feeds are already topic-specific).
  */
 /**
- * Reject articles that are clearly off-topic for a fragrance industry terminal.
+ * Relevance filter for the fragrance industry terminal.
+ * Covers all IFRA 12 categories: fine fragrance, deodorants, cosmetics,
+ * body care, hair care, soap, candles, diffusers, room sprays, laundry care, etc.
  * Returns true if the article should be EXCLUDED.
  */
-function isIrrelevant(title: string): boolean {
-  const t = title.toLowerCase();
-  // Crude oil, energy, geopolitics — NOT fragrance raw materials
-  if (/\b(crude oil|petroleum|gasoline|opec|brent|barrel|refinery|natural gas|lng|shale|fracking|oil rig|oil field|oil well)\b/.test(t)) return true;
-  // War, sanctions, general geopolitics (unless fragrance-related)
-  if (/\b(war in iran|shadow fleet|sanctions.*oil|venezuela.*oil|ecuador.*oil|russia.*oil|military|troops|missile|weapons)\b/.test(t)) return true;
-  // General fashion with no fragrance/beauty angle
-  if (/\b(fashion startup|fashion week|runway show|streetwear|sneaker|handbag|denim)\b/.test(t)
-      && !/\b(fragrance|perfume|beauty|scent|cosmetic)\b/.test(t)) return true;
-  // Generic consumer products unrelated to fragrance
-  if (/\b(deodorant|toothpaste|shampoo|dishwash|laundry detergent|cleaning product)\b/.test(t)
-      && !/\b(fragrance|scent|perfume)\b/.test(t)) return true;
-  // Cooking/food oils (not fragrance)
-  if (/\b(olive oil|cooking oil|palm oil|soybean oil|sunflower oil|canola oil|vegetable oil)\b/.test(t)
-      && !/\b(fragrance|perfume|essential oil|aroma)\b/.test(t)) return true;
+const FRAGRANCE_RELEVANCE = /\b(fragranc|perfum|cologne|scent|aroma|olfact|parfum|eau de|candle|diffuser|room spray|home fragranc|wax melt|air freshener|incense|essential oil|flavor.*fragranc|fragranc.*flavor|cosmetic|beauty|skincare|skin care|makeup|personal care|body care|body wash|body lotion|soap|bath bomb|deodorant|antiperspirant|shampoo|conditioner|hair care|grooming|toiletries|aftershave|laundry.*scent|fabric.*fragranc|reed diffuser|car fragranc|air care|fine fragranc|niche perfum|perfumer|nose|accord|top note|base note|middle note|sillage|longevity|oud|musk|amber|vanilla|sandalwood|vetiver|patchouli|jasmine|rose oil|bergamot|lavender|ylang|tonka|frankincense|myrrh|cedar|ingredient|raw material|aroma chemical|Givaudan|IFF|Symrise|Firmenich|dsm.firmenich|Robertet|LVMH|Estée Lauder|Coty|Inter Parfums|Puig|Shiseido|L'Oréal|Bath & Body Works|Yankee Candle|Diptyque|Jo Malone|Byredo|Le Labo|Creed|Tom Ford|Chanel|Dior|Guerlain|Hermès|IFRA|ECHA|CLP|CTPA)\b/i;
+
+const HARD_EXCLUDE = /\b(crude oil|petroleum|gasoline|opec|brent crude|barrel.*oil|refinery|natural gas|lng|shale|fracking|oil rig|oil field|oil well|oil pipeline|oil tanker|military|troops|missile|weapons|ammunition|drone strike|air strike|nuclear warhead)\b/i;
+
+function isIrrelevant(title: string, source: string): boolean {
+  // Always exclude hard off-topic (crude oil, military/weapons)
+  if (HARD_EXCLUDE.test(title)) return true;
+
+  // Specialist fragrance publications are always relevant — skip check
+  const trustedSources = ["Perfumer & Flavorist", "Cosmetics Design", "Cosmetics Design EU",
+    "Global Cosmetics News", "Premium Beauty News", "BoF Beauty", "WWD Beauty",
+    "Beauty Packaging", "The Perfume Society", "Cosmetics Business", "ECMA",
+    "National Candle Association"];
+  if (trustedSources.includes(source)) return false;
+
+  // For Google News & other broad sources, require at least one fragrance-relevant keyword
+  if (!FRAGRANCE_RELEVANCE.test(title)) return true;
+
   return false;
 }
 
@@ -211,7 +216,7 @@ export async function GET(request: Request) {
     const allNews = (results as any[])
       .filter((r) => r.status === "fulfilled")
       .flatMap((r) => r.value)
-      .filter((item: { title: string }) => !isIrrelevant(item.title))
+      .filter((item: { title: string; source: string }) => !isIrrelevant(item.title, item.source))
       .sort((a: { pubDate: string }, b: { pubDate: string }) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime())
       .slice(0, 50);
 
