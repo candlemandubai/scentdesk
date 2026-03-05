@@ -179,14 +179,23 @@ export default function AdminPage() {
 function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const { features, toggleFeature, toggleSubFeature, enableAll, disableAll, resetDefaults } = useAdminStore();
   const { resetLayout, widgets } = useDashboardStore();
-  const { totalClicks, totalPageViews, getSessionDuration, widgetInteractions, tabViews, events, trafficSources } = useAnalyticsStore();
+  const { getSessionDuration } = useAnalyticsStore();
   const { totalViews, liveViewers } = useViewCounter();
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(["widgets", "features"]));
   const [activeSection, setActiveSection] = useState<"toggles" | "analytics" | "layout">("toggles");
   const [subscribers, setSubscribers] = useState<{ email: string; subscribedAt: string; source: string }[]>([]);
   const [subscriberCount, setSubscriberCount] = useState(0);
 
-  // Fetch subscribers list
+  // Server-persisted analytics
+  const [serverAnalytics, setServerAnalytics] = useState<{
+    trafficSources: Record<string, number>;
+    widgetInteractions: Record<string, number>;
+    tabViews: Record<string, number>;
+    events: Array<{ type: string; widget?: string; tab?: string; source?: string; timestamp: number }>;
+    dailyViews: Record<string, number>;
+  }>({ trafficSources: {}, widgetInteractions: {}, tabViews: {}, events: [], dailyViews: {} });
+
+  // Fetch subscribers + server analytics
   useEffect(() => {
     const token = sessionStorage.getItem("admin_token");
     if (token) {
@@ -195,6 +204,13 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
         .then((d) => {
           if (d.subscribers) setSubscribers(d.subscribers);
           if (d.count !== undefined) setSubscriberCount(d.count);
+        })
+        .catch(() => {});
+
+      fetch("/api/analytics", { headers: { Authorization: `Bearer ${token}` } })
+        .then((r) => r.json())
+        .then((d) => {
+          if (d && !d.error) setServerAnalytics(d);
         })
         .catch(() => {});
     }
@@ -400,18 +416,22 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
               <div className="bg-scent-surface border border-scent-border rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Eye size={14} className="text-blue-400" />
-                  <span className="text-[10px] font-mono text-gray-500 uppercase">Session Views</span>
+                  <span className="text-[10px] font-mono text-gray-500 uppercase">Page Views</span>
                 </div>
-                <div className="text-2xl font-mono font-bold text-white">{totalPageViews}</div>
-                <div className="text-[9px] font-mono text-gray-600 mt-1">This session</div>
+                <div className="text-2xl font-mono font-bold text-white">
+                  {Object.values(serverAnalytics.dailyViews).reduce((a, b) => a + b, 0)}
+                </div>
+                <div className="text-[9px] font-mono text-gray-600 mt-1">All time (persistent)</div>
               </div>
               <div className="bg-scent-surface border border-scent-border rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <MousePointer size={14} className="text-amber-400" />
                   <span className="text-[10px] font-mono text-gray-500 uppercase">Clicks</span>
                 </div>
-                <div className="text-2xl font-mono font-bold text-white">{totalClicks}</div>
-                <div className="text-[9px] font-mono text-gray-600 mt-1">This session</div>
+                <div className="text-2xl font-mono font-bold text-white">
+                  {Object.values(serverAnalytics.widgetInteractions).reduce((a, b) => a + b, 0)}
+                </div>
+                <div className="text-[9px] font-mono text-gray-600 mt-1">All time (persistent)</div>
               </div>
               <div className="bg-scent-surface border border-scent-border rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
@@ -434,9 +454,9 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
             {/* Widget interactions */}
             <div className="bg-scent-surface border border-scent-border rounded-lg p-4">
               <div className="text-[11px] font-mono text-gray-500 uppercase tracking-wider mb-3">Widget Interactions</div>
-              {Object.keys(widgetInteractions).length > 0 ? (
+              {Object.keys(serverAnalytics.widgetInteractions).length > 0 ? (
                 <div className="space-y-2">
-                  {Object.entries(widgetInteractions)
+                  {Object.entries(serverAnalytics.widgetInteractions)
                     .sort(([, a], [, b]) => b - a)
                     .map(([widget, count]) => (
                       <div key={widget} className="flex items-center gap-3">
@@ -444,7 +464,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                         <div className="flex-1 h-1.5 bg-scent-bg rounded-full overflow-hidden">
                           <div
                             className="h-full bg-scent-accent rounded-full"
-                            style={{ width: `${(count / Math.max(...Object.values(widgetInteractions))) * 100}%` }}
+                            style={{ width: `${(count / Math.max(...Object.values(serverAnalytics.widgetInteractions))) * 100}%` }}
                           />
                         </div>
                         <span className="text-[12px] font-mono text-white w-8 text-right">{count}</span>
@@ -459,9 +479,9 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
             {/* Tab views */}
             <div className="bg-scent-surface border border-scent-border rounded-lg p-4">
               <div className="text-[11px] font-mono text-gray-500 uppercase tracking-wider mb-3">Tab Views</div>
-              {Object.keys(tabViews).length > 0 ? (
+              {Object.keys(serverAnalytics.tabViews).length > 0 ? (
                 <div className="grid grid-cols-5 gap-2">
-                  {Object.entries(tabViews).map(([tab, count]) => (
+                  {Object.entries(serverAnalytics.tabViews).map(([tab, count]) => (
                     <div key={tab} className="bg-scent-bg rounded-lg p-3 text-center border border-scent-border">
                       <div className="text-[10px] font-mono text-gray-500 uppercase mb-1">{tab}</div>
                       <div className="text-[18px] font-mono font-bold text-scent-accent">{count}</div>
@@ -478,12 +498,12 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
               {/* Traffic Sources */}
               <div className="bg-scent-surface border border-scent-border rounded-lg p-4">
                 <div className="text-[11px] font-mono text-gray-500 uppercase tracking-wider mb-3">Traffic Sources</div>
-                {Object.keys(trafficSources).length > 0 ? (
+                {Object.keys(serverAnalytics.trafficSources).length > 0 ? (
                   <div className="space-y-2">
-                    {Object.entries(trafficSources)
+                    {Object.entries(serverAnalytics.trafficSources)
                       .sort(([, a], [, b]) => b - a)
                       .map(([source, count]) => {
-                        const total = Object.values(trafficSources).reduce((a, b) => a + b, 0);
+                        const total = Object.values(serverAnalytics.trafficSources).reduce((a, b) => a + b, 0);
                         const pct = total > 0 ? Math.round((count / total) * 100) : 0;
                         return (
                           <div key={source} className="flex items-center gap-3">
@@ -509,7 +529,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
               <div className="bg-scent-surface border border-scent-border rounded-lg p-4">
                 <div className="text-[11px] font-mono text-gray-500 uppercase tracking-wider mb-3">Recent Events</div>
                 <div className="space-y-1 max-h-64 overflow-y-auto">
-                  {events.slice(-20).reverse().map((event, i) => (
+                  {serverAnalytics.events.slice(-20).reverse().map((event, i) => (
                     <div key={i} className="flex items-center gap-3 py-1 text-[11px] font-mono">
                       <span className="text-gray-600">{new Date(event.timestamp).toLocaleTimeString()}</span>
                       <span className={`badge ${
@@ -522,9 +542,10 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                       </span>
                       {event.widget && <span className="text-gray-400">{event.widget}</span>}
                       {event.tab && <span className="text-gray-400">{event.tab}</span>}
+                      {event.source && <span className="text-gray-500">via {event.source}</span>}
                     </div>
                   ))}
-                  {events.length === 0 && (
+                  {serverAnalytics.events.length === 0 && (
                     <p className="text-[12px] text-gray-600">No events recorded yet.</p>
                   )}
                 </div>

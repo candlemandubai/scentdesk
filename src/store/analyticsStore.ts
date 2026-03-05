@@ -49,6 +49,26 @@ function detectTrafficSource(): string {
   }
 }
 
+/** Fire-and-forget POST to server analytics */
+function sendToServer(payload: Record<string, unknown>) {
+  try {
+    const body = JSON.stringify(payload);
+    // Use sendBeacon for non-blocking fire-and-forget
+    if (typeof navigator !== "undefined" && navigator.sendBeacon) {
+      navigator.sendBeacon("/api/analytics", body);
+    } else {
+      fetch("/api/analytics", {
+        method: "POST",
+        body,
+        headers: { "Content-Type": "application/json" },
+        keepalive: true,
+      }).catch(() => {});
+    }
+  } catch {
+    // Silent fail — analytics should never break the app
+  }
+}
+
 interface AnalyticsState {
   events: AnalyticsEvent[];
   sessionStart: number;
@@ -83,6 +103,8 @@ export const useAnalyticsStore = create<AnalyticsState>()((set, get) => ({
           ...s.widgetInteractions,
           [event.widget]: (s.widgetInteractions[event.widget] || 0) + 1,
         };
+        // Persist to server
+        sendToServer({ type: "widget_click", widget: event.widget });
       }
       if (event.type === "page_view") {
         newState.totalPageViews = s.totalPageViews + 1;
@@ -93,12 +115,16 @@ export const useAnalyticsStore = create<AnalyticsState>()((set, get) => ({
           ...s.trafficSources,
           [source]: (s.trafficSources[source] || 0) + 1,
         };
+        // Persist to server
+        sendToServer({ type: "page_view", source });
       }
       if (event.type === "tab_change" && event.tab) {
         newState.tabViews = {
           ...s.tabViews,
           [event.tab]: (s.tabViews[event.tab] || 0) + 1,
         };
+        // Persist to server
+        sendToServer({ type: "tab_change", tab: event.tab });
       }
       return newState;
     }),

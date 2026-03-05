@@ -34,6 +34,9 @@ const RSS_FEEDS: FeedSource[] = [
   // Home fragrance — candles, diffusers, room sprays
   { url: "https://news.google.com/rss/search?q=scented+candle+market+OR+candle+industry+OR+luxury+candles+brand&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Home Fragrance" },
   { url: "https://news.google.com/rss/search?q=reed+diffuser+market+OR+room+spray+market+OR+home+fragrance+industry&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Home Fragrance" },
+  // Specialist fragrance publications
+  { url: "https://perfumesociety.org/feed", source: "The Perfume Society", category: "Launches" },
+  { url: "https://cosmeticsbusiness.com/rss", source: "Cosmetics Business", category: "Industry" },
 ];
 
 function getTimeSince(dateStr: string): string {
@@ -59,6 +62,43 @@ function guessSentiment(title: string): "positive" | "negative" | "neutral" {
   if (posScore > negScore) return "positive";
   if (negScore > posScore) return "negative";
   return "neutral";
+}
+
+/**
+ * Smart auto-categorization — overrides the feed's default category
+ * when article title clearly matches a different topic.
+ * Only overrides for non-Google News feeds (Google feeds are already topic-specific).
+ */
+function smartCategory(title: string, defaultCategory: string, isGoogleNews: boolean): string {
+  if (isGoogleNews) return defaultCategory; // Google feeds are already targeted
+
+  const t = title.toLowerCase();
+
+  // M&A / Deals — acquisitions, mergers, partnerships
+  if (/\b(acqui|merger|deal|buyout|takeover|partnership|joint venture|stake|invest[sm]|ipo|valuation|revenue|earning|fiscal|quarterly)\b/.test(t))
+    return "M&A";
+
+  // Regulatory — IFRA, bans, compliance, EU/FDA
+  if (/\b(ifra|regulation|regulatory|compliance|restrict|ban|amendment|directive|eu cosmetics|fda|reach|echa|safety assessment)\b/.test(t))
+    return "Regulatory";
+
+  // Raw Materials / Supply Chain
+  if (/\b(raw material|essential oil|ingredient|vanilla|sandalwood|vetiver|oud|musk|amber|patchouli|rose oil|supply chain|shortage|pricing|sourcing|harvest|crop|distill)\b/.test(t))
+    return "Raw Materials";
+
+  // Launches — new products, collections
+  if (/\b(launch|new fragrance|new perfume|debut|collection|release|unveil|introduce|limited edition)\b/.test(t))
+    return "Launches";
+
+  // Home Fragrance — candles, diffusers
+  if (/\b(candle|diffuser|room spray|home fragrance|home scent|wax melt|reed diffuser|air freshener)\b/.test(t))
+    return "Home Fragrance";
+
+  // Market — market size, trends, growth, reports
+  if (/\b(market size|market share|market growth|forecast|trend|billion|million|cagr|report|analysis|outlook|expansion)\b/.test(t))
+    return "Market";
+
+  return defaultCategory;
 }
 
 function guessRegion(title: string, content?: string): string {
@@ -105,7 +145,7 @@ export async function GET(request: Request) {
           id: `${feed.source}-${idx}-${Date.now()}`,
           title: cleanTitle,
           source: realSource || stripHtml(item.creator || "") || feed.source,
-          category: feed.category,
+          category: smartCategory(cleanTitle, feed.category, isGoogleNews),
           timestamp: getTimeSince(item.pubDate || item.isoDate || new Date().toISOString()),
           pubDate: item.pubDate || item.isoDate || new Date().toISOString(),
           url: sanitizeUrl(item.link || "#"),

@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
+import { put, list } from "@vercel/blob";
 import { promises as fs } from "fs";
 import path from "path";
 
-const SUBSCRIBERS_FILE =
-  process.env.NODE_ENV === "production"
-    ? "/tmp/scentdesk-subscribers.json"
-    : path.join(process.cwd(), ".cache", "subscribers.json");
+const BLOB_KEY = "scentdesk/subscribers.json";
+const LOCAL_FILE = path.join(process.cwd(), ".cache", "subscribers.json");
 
 interface Subscriber {
   email: string;
@@ -15,8 +14,22 @@ interface Subscriber {
 }
 
 async function getSubscribers(): Promise<Subscriber[]> {
+  // Production: Vercel Blob
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    try {
+      const { blobs } = await list({ prefix: BLOB_KEY, limit: 1 });
+      if (blobs.length === 0) return [];
+      const res = await fetch(blobs[0].url, { cache: "no-store" });
+      if (!res.ok) return [];
+      return res.json();
+    } catch {
+      return [];
+    }
+  }
+
+  // Local dev: filesystem
   try {
-    const data = await fs.readFile(SUBSCRIBERS_FILE, "utf-8");
+    const data = await fs.readFile(LOCAL_FILE, "utf-8");
     return JSON.parse(data);
   } catch {
     return [];
@@ -24,9 +37,23 @@ async function getSubscribers(): Promise<Subscriber[]> {
 }
 
 async function saveSubscribers(subscribers: Subscriber[]): Promise<void> {
-  const dir = path.dirname(SUBSCRIBERS_FILE);
+  const json = JSON.stringify(subscribers, null, 2);
+
+  // Production: Vercel Blob
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    await put(BLOB_KEY, json, {
+      access: "public",
+      addRandomSuffix: false,
+      allowOverwrite: true,
+      contentType: "application/json",
+    });
+    return;
+  }
+
+  // Local dev: filesystem
+  const dir = path.dirname(LOCAL_FILE);
   await fs.mkdir(dir, { recursive: true });
-  await fs.writeFile(SUBSCRIBERS_FILE, JSON.stringify(subscribers, null, 2));
+  await fs.writeFile(LOCAL_FILE, json);
 }
 
 // POST — Subscribe a new email
@@ -62,7 +89,7 @@ export async function POST(request: Request) {
     await saveSubscribers(subscribers);
 
     return NextResponse.json({
-      message: "Welcome aboard! Your first brief arrives Monday.",
+      message: "You're in! We'll notify you when the beta launches.",
       count: subscribers.length,
     });
   } catch (error) {
