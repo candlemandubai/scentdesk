@@ -217,6 +217,11 @@ export async function GET(request: Request) {
       .filter((r) => r.status === "fulfilled")
       .flatMap((r) => r.value)
       .filter((item: { title: string; source: string }) => !isIrrelevant(item.title, item.source))
+      .filter((item: { title: string }, idx: number, arr: { title: string }[]) => {
+        // Deduplicate by normalized title (case-insensitive, trimmed)
+        const norm = item.title.toLowerCase().trim();
+        return arr.findIndex((a) => a.title.toLowerCase().trim() === norm) === idx;
+      })
       .sort((a: { pubDate: string }, b: { pubDate: string }) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime())
       .slice(0, 50);
 
