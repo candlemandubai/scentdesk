@@ -17,9 +17,9 @@ interface FeedSource {
 
 const RSS_FEEDS: FeedSource[] = [
   // Fragrance & beauty industry feeds
-  { url: "https://www.perfumerflavorist.com/rss/all", source: "Perfumer & Flavorist", category: "Industry" },
-  { url: "https://www.cosmeticsdesign.com/var/plain_site/storage/rss/news.rss", source: "Cosmetics Design", category: "Industry" },
-  { url: "https://www.cosmeticsdesign-europe.com/var/plain_site/storage/rss/news.rss", source: "Cosmetics Design EU", category: "Regulatory" },
+  { url: "https://www.beautyindependent.com/feed/", source: "Beauty Independent", category: "Industry" },
+  { url: "https://news.google.com/rss/search?q=site:perfumerflavorist.com&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Industry" },
+  { url: "https://news.google.com/rss/search?q=site:cosmeticsdesign.com+OR+site:cosmeticsdesign-europe.com&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Industry" },
   { url: "https://www.globalcosmeticsnews.com/feed/", source: "Global Cosmetics News", category: "Market" },
   { url: "https://www.premiumbeautynews.com/en/?format=feed&type=rss", source: "Premium Beauty News", category: "Launches" },
   // Business/market feeds — beauty-specific only (no general fashion)
@@ -113,7 +113,7 @@ function isIrrelevant(title: string, source: string): boolean {
   const trustedSources = ["Perfumer & Flavorist", "Cosmetics Design", "Cosmetics Design EU",
     "Global Cosmetics News", "Premium Beauty News", "BoF Beauty", "WWD Beauty",
     "Beauty Packaging", "The Perfume Society", "Cosmetics Business", "ECMA",
-    "National Candle Association"];
+    "National Candle Association", "Beauty Independent"];
   if (trustedSources.includes(source)) return false;
 
   // Strong signal = always pass
@@ -214,7 +214,7 @@ export async function GET(request: Request) {
           return ({
           id: `${feed.source}-${idx}-${Date.now()}`,
           title: cleanTitle,
-          source: realSource || stripHtml(item.creator || "") || feed.source,
+          source: realSource || feed.source,
           category: smartCategory(cleanTitle, feed.category, isGoogleNews),
           timestamp: getTimeSince(item.pubDate || item.isoDate || new Date().toISOString()),
           pubDate: item.pubDate || item.isoDate || new Date().toISOString(),
