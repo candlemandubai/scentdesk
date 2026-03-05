@@ -21,10 +21,15 @@ const COMMUNITY_FEEDS: CommunitySource[] = [
   { url: "https://www.reddit.com/r/fragrance/hot/.rss", name: "r/fragrance", platform: "reddit", icon: "💬" },
   { url: "https://www.reddit.com/r/fragranceswap/hot/.rss", name: "r/fragranceswap", platform: "reddit", icon: "🔄" },
   { url: "https://www.reddit.com/r/Colognes/hot/.rss", name: "r/Colognes", platform: "reddit", icon: "💬" },
-  { url: "https://www.reddit.com/r/candlemaking/hot/.rss", name: "r/candlemaking", platform: "reddit", icon: "🕯️" },
   { url: "https://www.reddit.com/r/Perfumes/hot/.rss", name: "r/Perfumes", platform: "reddit", icon: "💬" },
   { url: "https://www.reddit.com/r/DIYfragrance/hot/.rss", name: "r/DIYfragrance", platform: "reddit", icon: "🧪" },
   { url: "https://www.reddit.com/r/indiemakeupandmore/hot/.rss", name: "r/indiemakeupandmore", platform: "reddit", icon: "🌿" },
+  // Candle & home fragrance communities
+  { url: "https://www.reddit.com/r/candlemaking/hot/.rss", name: "r/candlemaking", platform: "reddit", icon: "🕯️" },
+  { url: "https://www.reddit.com/r/Candles/hot/.rss", name: "r/Candles", platform: "reddit", icon: "🕯️" },
+  { url: "https://www.reddit.com/r/candlemakers/hot/.rss", name: "r/candlemakers", platform: "reddit", icon: "🕯️" },
+  { url: "https://www.reddit.com/r/scentedcandles/hot/.rss", name: "r/scentedcandles", platform: "reddit", icon: "🕯️" },
+  { url: "https://www.reddit.com/r/waxmelts/hot/.rss", name: "r/waxmelts", platform: "reddit", icon: "🫠" },
 ];
 
 function getTimeSince(dateStr: string): string {
