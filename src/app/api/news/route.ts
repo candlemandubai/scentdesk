@@ -101,7 +101,7 @@ const FRAGRANCE_CONTEXT = /\b(fragranc|perfum|scent|aroma|parfum|cosmetic|beauty
 const HARD_EXCLUDE = /\b(crude oil|petroleum|gasoline|opec|brent crude|barrel.*oil|refinery|natural gas|lng|shale|fracking|oil rig|oil field|oil well|oil pipeline|oil tanker|military|troops|missile|weapons|ammunition|drone strike|air strike|nuclear warhead)\b/i;
 
 // Noise: food, tech, finance, gaming articles that happen to mention ingredients
-const NOISE_EXCLUDE = /\b(recipe|baking|baker|bakery|cookbook|ice cream|iced coffee|grocery store|cooking|kitchen hack|keyboard|gaming|laptop|smartphone|stock option|call option|put option|financial option|vape|vaping|e.liquid|nicotine|salt nic|custard monster|monster energy)\b/i;
+const NOISE_EXCLUDE = /\b(recipe|baking|baker|bakery|cookbook|ice cream|iced coffee|grocery store|cooking|kitchen hack|keyboard|gaming|laptop|smartphone|stock option|call option|put option|financial option|vape|vaping|e.liquid|nicotine|salt nic|custard monster|monster energy|fashion startup|fashion brand|fashion week|fashion house|fashion design|fashion show|streetwear|clothing line|apparel)\b/i;
 
 function isIrrelevant(title: string, source: string): boolean {
   // Always exclude hard off-topic
