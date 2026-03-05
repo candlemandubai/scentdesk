@@ -1,0 +1,21 @@
+name: Generate Daily Brief
+
+on:
+  schedule:
+    # 4x daily: 12am, 6am, 12pm, 6pm UTC
+    - cron: '0 0 * * *'
+    - cron: '0 6 * * *'
+    - cron: '0 12 * * *'
+    - cron: '0 18 * * *'
+  workflow_dispatch: # Allow manual trigger from GitHub UI
+
+jobs:
+  generate-brief:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Daily Brief Generation
+        run: |
+          curl -s -X POST "https://scentdesk.app/api/cron/daily-brief" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json" \
+            --max-time 60
