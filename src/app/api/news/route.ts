@@ -84,29 +84,46 @@ function guessSentiment(title: string): "positive" | "negative" | "neutral" {
  */
 /**
  * Relevance filter for the fragrance industry terminal.
- * Covers all IFRA 12 categories: fine fragrance, deodorants, cosmetics,
- * body care, hair care, soap, candles, diffusers, room sprays, laundry care, etc.
+ * Two-tier keyword system:
+ *  - STRONG: always fragrance-relevant (perfume, candle, IFRA brands, etc.)
+ *  - WEAK: ambiguous ingredient names (vanilla, lavender) that need fragrance context
  * Returns true if the article should be EXCLUDED.
  */
-const FRAGRANCE_RELEVANCE = /\b(fragranc|perfum|cologne|scent|aroma|olfact|parfum|eau de|candle|diffuser|room spray|home fragranc|wax melt|air freshener|incense|essential oil|flavor.*fragranc|fragranc.*flavor|cosmetic|beauty|skincare|skin care|makeup|personal care|body care|body wash|body lotion|soap|bath bomb|deodorant|antiperspirant|shampoo|conditioner|hair care|grooming|toiletries|aftershave|laundry.*scent|fabric.*fragranc|reed diffuser|car fragranc|air care|fine fragranc|niche perfum|perfumer|nose|accord|top note|base note|middle note|sillage|longevity|oud|musk|amber|vanilla|sandalwood|vetiver|patchouli|jasmine|rose oil|bergamot|lavender|ylang|tonka|frankincense|myrrh|cedar|ingredient|raw material|aroma chemical|Givaudan|IFF|Symrise|Firmenich|dsm.firmenich|Robertet|LVMH|Estée Lauder|Coty|Inter Parfums|Puig|Shiseido|L'Oréal|Bath & Body Works|Yankee Candle|Diptyque|Jo Malone|Byredo|Le Labo|Creed|Tom Ford|Chanel|Dior|Guerlain|Hermès|IFRA|ECHA|CLP|CTPA)\b/i;
+// Strong signals — always relevant on their own
+const STRONG_RELEVANCE = /\b(fragranc|perfum|cologne|scent(?!ed candle)|aroma(?!tic rice)|olfact|parfum|eau de|candle|diffuser|room spray|home fragranc|wax melt|air freshener|incense|essential oil|flavor.*fragranc|fragranc.*flavor|cosmetic|beauty|skincare|skin care|makeup|personal care|body care|body wash|body lotion|bath bomb|deodorant|antiperspirant|shampoo|conditioner|hair care|grooming|toiletries|aftershave|laundry.*scent|fabric.*fragranc|reed diffuser|car fragranc|air care|fine fragranc|niche perfum|perfumer|accord|top note|base note|middle note|sillage|longevity|aroma chemical|raw material.*fragranc|fragranc.*raw material|Givaudan|IFF|Symrise|Firmenich|dsm.firmenich|Robertet|LVMH|Estée Lauder|Coty|Inter Parfums|Puig|Shiseido|L'Oréal|Bath & Body Works|Yankee Candle|Diptyque|Jo Malone|Byredo|Le Labo|Creed|Tom Ford|Chanel|Dior|Guerlain|Hermès|IFRA|ECHA|CLP|CTPA)\b/i;
+
+// Weak signals — ingredient names that are ambiguous without fragrance context
+const WEAK_INGREDIENT = /\b(vanilla|sandalwood|vetiver|patchouli|jasmine|rose oil|bergamot|lavender|ylang|tonka|frankincense|myrrh|cedar|oud|musk|amber)\b/i;
+
+// Fragrance context required alongside weak ingredient matches
+const FRAGRANCE_CONTEXT = /\b(fragranc|perfum|scent|aroma|parfum|cosmetic|beauty|candle|oil|harvest|crop|price|market|shortage|sourcing|ingredient|extract|distill|supplier|raw material|essential|accord|note)\b/i;
 
 const HARD_EXCLUDE = /\b(crude oil|petroleum|gasoline|opec|brent crude|barrel.*oil|refinery|natural gas|lng|shale|fracking|oil rig|oil field|oil well|oil pipeline|oil tanker|military|troops|missile|weapons|ammunition|drone strike|air strike|nuclear warhead)\b/i;
 
-function isIrrelevant(title: string, source: string): boolean {
-  // Always exclude hard off-topic (crude oil, military/weapons)
-  if (HARD_EXCLUDE.test(title)) return true;
+// Noise: food, tech, finance, gaming articles that happen to mention ingredients
+const NOISE_EXCLUDE = /\b(recipe|baking|baker|bakery|cookbook|ice cream|iced coffee|grocery store|cooking|kitchen hack|keyboard|gaming|laptop|smartphone|stock option|call option|put option|financial option|vape|vaping|e.liquid|nicotine|salt nic|custard monster|monster energy)\b/i;
 
-  // Specialist fragrance publications are always relevant — skip check
+function isIrrelevant(title: string, source: string): boolean {
+  // Always exclude hard off-topic
+  if (HARD_EXCLUDE.test(title)) return true;
+  // Exclude food/tech/finance/vape noise
+  if (NOISE_EXCLUDE.test(title)) return true;
+
+  // Specialist fragrance publications are always relevant
   const trustedSources = ["Perfumer & Flavorist", "Cosmetics Design", "Cosmetics Design EU",
     "Global Cosmetics News", "Premium Beauty News", "BoF Beauty", "WWD Beauty",
     "Beauty Packaging", "The Perfume Society", "Cosmetics Business", "ECMA",
     "National Candle Association"];
   if (trustedSources.includes(source)) return false;
 
-  // For Google News & other broad sources, require at least one fragrance-relevant keyword
-  if (!FRAGRANCE_RELEVANCE.test(title)) return true;
+  // Strong signal = always pass
+  if (STRONG_RELEVANCE.test(title)) return false;
 
-  return false;
+  // Weak ingredient signal = needs fragrance context
+  if (WEAK_INGREDIENT.test(title) && FRAGRANCE_CONTEXT.test(title)) return false;
+
+  // No relevant signal found
+  return true;
 }
 
 function smartCategory(title: string, defaultCategory: string, isGoogleNews: boolean): string {
