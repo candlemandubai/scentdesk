@@ -1,7 +1,7 @@
 "use client";
 import WidgetWrapper, { LiveBadge, CountBadge } from "./WidgetWrapper";
 import { useLiveData } from "@/hooks/useLiveData";
-import { RefreshCw, Play, Youtube } from "lucide-react";
+import { RefreshCw, Play, Youtube, ExternalLink } from "lucide-react";
 
 interface VideoItem {
   id: string;
@@ -37,6 +37,19 @@ const TAG_COLORS: Record<string, string> = {
 
 const fallback: YouTubeResponse = { videos: [], lastUpdated: "", count: 0 };
 
+// Fallback channel list when YouTube RSS feeds are unavailable
+const FALLBACK_CHANNELS = [
+  { name: "Jeremy Fragrance", url: "https://www.youtube.com/@JeremyFragrance" },
+  { name: "Demi Rawling", url: "https://www.youtube.com/@DemiRawling" },
+  { name: "The Fragrance Apprentice", url: "https://www.youtube.com/@TheFragranceApprentice" },
+  { name: "Redolessence", url: "https://www.youtube.com/@Redolessence" },
+  { name: "Brooklyn Fragrance Lover", url: "https://www.youtube.com/@BrooklynFragranceLover" },
+  { name: "Fragrance Du Bois", url: "https://www.youtube.com/@FragranceDuBois" },
+  { name: "TLTG Reviews", url: "https://www.youtube.com/@TLTGReviews" },
+  { name: "Gents Scents", url: "https://www.youtube.com/@GentsScents" },
+  { name: "Chaos Fragrances", url: "https://www.youtube.com/@ChaosFragrances" },
+];
+
 export default function YouTubeFeed() {
   const { data, loading, refetch, isStale } = useLiveData<YouTubeResponse>({
     url: "/api/youtube",
@@ -50,7 +63,7 @@ export default function YouTubeFeed() {
     <WidgetWrapper
       title="Fragrance YouTube"
       badge={<><LiveBadge /><CountBadge count={videos.length} /></>}
-      info="Latest videos from top fragrance YouTubers — Jeremy Fragrance, Demi Rawling, CurlyFragrance, Redolessence, Brooklyn Fragrance Lover, Gents Scents, and more. Auto-refreshes every 5 minutes."
+      info="Latest videos from top fragrance YouTubers — Jeremy Fragrance, Demi Rawling, Redolessence, Brooklyn Fragrance Lover, Gents Scents, Chaos Fragrances, and more. Auto-refreshes every 5 minutes."
       headerRight={
         <button
           onClick={refetch}
@@ -70,10 +83,45 @@ export default function YouTubeFeed() {
 
       <div className="space-y-3 max-h-[420px] overflow-y-auto pr-1">
         {videos.length === 0 && !loading && (
-          <div className="flex flex-col items-center justify-center py-8 text-gray-600">
-            <Youtube size={24} className="mb-2 opacity-30" />
-            <p className="text-[11px] font-mono">No videos available right now</p>
-            <p className="text-[9px] text-gray-700 mt-1">YouTube feeds may be temporarily unavailable</p>
+          <div className="px-1">
+            {/* Friendly message */}
+            <div className="flex items-center gap-2 py-2 mb-3 px-2.5 bg-amber-500/5 rounded border border-amber-500/10">
+              <Youtube size={12} className="text-amber-400 shrink-0" />
+              <span className="text-[10px] text-amber-300/80 font-mono leading-tight">
+                YouTube feeds are temporarily unavailable — this usually resolves on its own. Browse channels directly below.
+              </span>
+            </div>
+
+            {/* Channel list */}
+            <div className="text-[9px] font-mono font-semibold text-gray-500 uppercase tracking-wider mb-1.5 px-1">
+              Fragrance Channels
+            </div>
+            <div className="space-y-0.5">
+              {FALLBACK_CHANNELS.map((ch) => (
+                <a
+                  key={ch.name}
+                  href={ch.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 py-1.5 px-2 rounded hover:bg-scent-border/30 transition-colors group"
+                >
+                  <Youtube size={12} className="text-red-500/60 group-hover:text-red-400 shrink-0 transition-colors" />
+                  <span className="text-[11px] text-gray-400 flex-1 group-hover:text-gray-200 transition-colors">
+                    {ch.name}
+                  </span>
+                  <ExternalLink size={9} className="text-gray-600 group-hover:text-scent-accent transition-colors" />
+                </a>
+              ))}
+            </div>
+
+            {/* Retry */}
+            <button
+              onClick={refetch}
+              className="flex items-center gap-1.5 mx-auto mt-3 text-[10px] font-mono text-gray-500 hover:text-scent-accent transition-colors py-1.5 px-3 rounded border border-scent-border/50 hover:border-scent-accent/30"
+            >
+              <RefreshCw size={10} />
+              Retry feed
+            </button>
           </div>
         )}
         {videos.slice(0, 15).map((video) => (

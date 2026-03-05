@@ -33,7 +33,8 @@ export type WidgetType =
   | "jobs-board"
   | "daily-brief"
   | "community-feed"
-  | "youtube-feed";
+  | "youtube-feed"
+  | "stock-tracker";
 
 export interface NewsItem {
   id: string;
