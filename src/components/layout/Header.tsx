@@ -13,6 +13,7 @@ import {
   Sun,
   Moon,
   Users,
+  Github,
 } from "lucide-react";
 import type { DashboardTab } from "@/types";
 import CommandPalette from "@/components/layout/CommandPalette";
@@ -159,6 +160,15 @@ export default function Header() {
               className="text-[10px] font-mono text-gray-500 hover:text-scent-accent transition-colors hidden sm:block"
             >
               olfactal.com
+            </a>
+            <a
+              href="https://github.com/candlemandubai/scentdesk"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-500 hover:text-scent-accent transition-colors hidden sm:block"
+              title="View on GitHub"
+            >
+              <Github size={14} />
             </a>
 
             <div className="h-4 w-px bg-scent-border hidden sm:block" />
