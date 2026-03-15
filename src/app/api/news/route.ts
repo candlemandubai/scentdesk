@@ -25,7 +25,12 @@ const RSS_FEEDS: FeedSource[] = [
   // Business/market feeds — beauty-specific only (no general fashion)
   { url: "https://www.businessoffashion.com/feed/beauty", source: "BoF Beauty", category: "Industry" },
   { url: "https://wwd.com/beauty-industry-news/feed/", source: "WWD Beauty", category: "Industry" },
-  { url: "https://feeds.feedburner.com/beautypackaging/dOWj", source: "Beauty Packaging", category: "Supply Chain" },
+  { url: "https://news.google.com/rss/search?q=site:beautypackaging.com&hl=en-US&gl=US&ceid=US:en", source: "Beauty Packaging", category: "Supply Chain" },
+  // Fragrance company financial & M&A feeds (Seeking Alpha)
+  { url: "https://seekingalpha.com/api/sa/combined/IFF.xml", source: "Seeking Alpha", category: "M&A" },
+  { url: "https://seekingalpha.com/api/sa/combined/GVDNY.xml", source: "Seeking Alpha", category: "M&A" },
+  { url: "https://seekingalpha.com/api/sa/combined/SYIEY.xml", source: "Seeking Alpha", category: "M&A" },
+  { url: "https://seekingalpha.com/api/sa/combined/DSFIY.xml", source: "Seeking Alpha", category: "M&A" },
   // General Reuters business (filtered for fragrance)
   { url: "https://news.google.com/rss/search?q=fragrance+industry+OR+perfume+market+OR+essential+oils+market&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Market" },
   { url: "https://news.google.com/rss/search?q=IFRA+OR+fragrance+regulation+OR+cosmetics+regulation+OR+CTPA+OR+CLP+cosmetics&hl=en-US&gl=US&ceid=US:en", source: "Google News", category: "Regulatory" },
@@ -100,21 +105,40 @@ const FRAGRANCE_CONTEXT = /\b(fragranc|perfum|scent|aroma|parfum|cosmetic|beauty
 
 const HARD_EXCLUDE = /\b(crude oil|petroleum|gasoline|opec|brent crude|barrel.*oil|refinery|natural gas|lng|shale|fracking|oil rig|oil field|oil well|oil pipeline|oil tanker|military|troops|missile|weapons|ammunition|drone strike|air strike|nuclear warhead)\b/i;
 
-// Noise: food, tech, finance, gaming articles that happen to mention ingredients
-const NOISE_EXCLUDE = /\b(recipe|baking|baker|bakery|cookbook|ice cream|iced coffee|grocery store|cooking|kitchen hack|keyboard|gaming|laptop|smartphone|stock option|call option|put option|financial option|vape|vaping|e.liquid|nicotine|salt nic|custard monster|monster energy|fashion startup|fashion brand|fashion week|fashion house|fashion design|fashion show|streetwear|clothing line|apparel)\b/i;
+// Noise: food, tech, finance, gaming, non-fragrance beauty/cosmetics articles
+const NOISE_EXCLUDE = /\b(recipe|baking|baker|bakery|cookbook|ice cream|iced coffee|grocery store|cooking|kitchen hack|keyboard|gaming|laptop|smartphone|stock option|call option|put option|financial option|vape|vaping|e.liquid|nicotine|salt nic|custard monster|monster energy|fashion startup|fashion brand|fashion week|fashion house|fashion design|fashion show|streetwear|clothing line|apparel|pat mcgrath|makeup by mario|rom&nd|romand|color cosmetics|mascara|eyeshadow|eye shadow|lipstick|lip gloss|foundation|concealer|blush|bronzer|eyeliner|nail polish|nail lacquer|manicure|hair dye|hair color|adidas|nike|sneaker|superstar shoe|tylenol|acetaminophen|ibuprofen|lawsuit.*safety|kenvue|aesthetic doctor|aesthetics doctor|dermal filler|botox|plastic surgery|hair campaign|hair.*shapes you|complexion|sunscreen|spf|acne|retinol|serum|moisturizer|toner|cleanser|exfoliat|anti.aging cream|wrinkle cream|price drop alert|bikini.*price|coupon code|promo code|discount code)\b/i;
+
+// Trusted-source noise: even trusted beauty sources publish non-fragrance articles
+// These patterns catch clearly off-topic articles from BoF, WWD, Cosmetics Business, etc.
+const TRUSTED_NOISE = /\b(adidas|nike|sneaker|tylenol|kenvue|aesthetic doctor|plastic surgery|dermal filler|botox|hair campaign|hair.*shapes you|shoe|trainer|apparel|clothing|fashion|streetwear|workout|fitness|gym|athlete|sports|nfl|nba|olympic|price drop alert|bikini.*price|coupon code|promo code)\b/i;
 
 function isIrrelevant(title: string, source: string): boolean {
   // Always exclude hard off-topic
   if (HARD_EXCLUDE.test(title)) return true;
-  // Exclude food/tech/finance/vape noise
+  // Exclude food/tech/finance/vape noise (applies to ALL sources)
   if (NOISE_EXCLUDE.test(title)) return true;
 
-  // Specialist fragrance publications are always relevant
-  const trustedSources = ["Perfumer & Flavorist", "Cosmetics Design", "Cosmetics Design EU",
-    "Global Cosmetics News", "Premium Beauty News", "BoF Beauty", "WWD Beauty",
-    "Beauty Packaging", "The Perfume Society", "Cosmetics Business", "ECMA",
-    "National Candle Association", "Beauty Independent"];
-  if (trustedSources.includes(source)) return false;
+  // Specialist fragrance-ONLY publications — always relevant (very focused feeds)
+  const pureFragranceSources = ["Perfumer & Flavorist", "Cosmetics Design", "Cosmetics Design EU",
+    "Global Cosmetics News", "Premium Beauty News", "Beauty Packaging",
+    "The Perfume Society", "ECMA", "National Candle Association"];
+  if (pureFragranceSources.includes(source)) return false;
+
+  // Seeking Alpha: finance site — only pass articles mentioning our tracked companies
+  if (source === "Seeking Alpha") {
+    const SA_RELEVANT = /\b(IFF|International Flavors|Givaudan|Symrise|DSM.Firmenich|DSFIY|GVDNY|SYIEY|KDSKF|fragranc|perfum|flavor)/i;
+    return !SA_RELEVANT.test(title);
+  }
+
+  // Broader beauty publications — trusted but can publish off-topic articles
+  // Apply noise filter to catch non-fragrance beauty content
+  const broadBeautySources = ["BoF Beauty", "WWD Beauty", "Cosmetics Business", "Beauty Independent"];
+  if (broadBeautySources.includes(source)) {
+    // Exclude clearly off-topic beauty articles from these sources
+    if (TRUSTED_NOISE.test(title)) return true;
+    // Still allow through — they're trusted for beauty/fragrance
+    return false;
+  }
 
   // Strong signal = always pass
   if (STRONG_RELEVANCE.test(title)) return false;
@@ -149,7 +173,9 @@ function smartCategory(title: string, defaultCategory: string, isGoogleNews: boo
     return "M&A";
 
   // Regulatory — IFRA, bans, compliance, EU/FDA, CTPA, CLP
-  if (/\b(ifra|regulation|regulatory|compliance|restrict|ban|amendment|directive|eu cosmetics|fda|reach|echa|safety assessment|anti.dumping|dut(?:y|ies)|tariff|ctpa|clp|labelling)\b/.test(t))
+  // Exclude false positives like "emotional regulation"
+  if (/\b(ifra|regulatory|compliance|restrict|ban(?:ned|ning|s)?\b|amendment|directive|eu cosmetics|fda|reach|echa|safety assessment|anti.dumping|dut(?:y|ies)|tariff|ctpa|clp|labelling)\b/.test(t)
+      && !/emotional regulation|self.regulation|mood regulation/i.test(t))
     return "Regulatory";
 
   // Raw Materials / Supply Chain
